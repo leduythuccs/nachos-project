@@ -1,0 +1,9 @@
+*.o
+*.coff
+code/build.linux/DISK_0
+code/build.linux/nachos
+coff2noff/coff2noff.x86Linux
+code/test/*
+!code/test/*.c
+!code/test/script
+!code/test/Makefile
