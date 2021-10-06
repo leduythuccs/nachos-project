@@ -1,4 +1,4 @@
-// scheduler.cc 
+// scheduler.cc
 //	Routines to choose the next thread to run, and to dispatch to
 //	that thread.
 //
@@ -7,15 +7,15 @@
 //	(since we are on a uniprocessor).
 //
 // 	NOTE: We can't use Locks to provide mutual exclusion here, since
-// 	if we needed to wait for a lock, and the lock was busy, we would 
-//	end up calling FindNextToRun(), and that would put us in an 
+// 	if we needed to wait for a lock, and the lock was busy, we would
+//	end up calling FindNextToRun(), and that would put us in an
 //	infinite loop.
 //
 // 	Very simple implementation -- no priorities, straight FIFO.
 //	Might need to be improved in later assignments.
 //
 // Copyright (c) 1992-1996 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
@@ -29,21 +29,17 @@
 //	Initially, no ready threads.
 //----------------------------------------------------------------------
 
-Scheduler::Scheduler()
-{ 
-    readyList = new List<Thread *>; 
+Scheduler::Scheduler() {
+    readyList = new List<Thread *>;
     toBeDestroyed = NULL;
-} 
+}
 
 //----------------------------------------------------------------------
 // Scheduler::~Scheduler
 // 	De-allocate the list of ready threads.
 //----------------------------------------------------------------------
 
-Scheduler::~Scheduler()
-{ 
-    delete readyList; 
-} 
+Scheduler::~Scheduler() { delete readyList; }
 
 //----------------------------------------------------------------------
 // Scheduler::ReadyToRun
@@ -53,9 +49,7 @@ Scheduler::~Scheduler()
 //	"thread" is the thread to be put on the ready list.
 //----------------------------------------------------------------------
 
-void
-Scheduler::ReadyToRun (Thread *thread)
-{
+void Scheduler::ReadyToRun(Thread *thread) {
     ASSERT(kernel->interrupt->getLevel() == IntOff);
     DEBUG(dbgThread, "Putting thread on ready list: " << thread->getName());
 
@@ -71,15 +65,13 @@ Scheduler::ReadyToRun (Thread *thread)
 //	Thread is removed from the ready list.
 //----------------------------------------------------------------------
 
-Thread *
-Scheduler::FindNextToRun ()
-{
+Thread *Scheduler::FindNextToRun() {
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
     if (readyList->IsEmpty()) {
-	return NULL;
+        return NULL;
     } else {
-    	return readyList->RemoveFront();
+        return readyList->RemoveFront();
     }
 }
 
@@ -100,32 +92,31 @@ Scheduler::FindNextToRun ()
 //		(when the next thread starts running)
 //----------------------------------------------------------------------
 
-void
-Scheduler::Run (Thread *nextThread, bool finishing)
-{
+void Scheduler::Run(Thread *nextThread, bool finishing) {
     Thread *oldThread = kernel->currentThread;
-    
+
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
-    if (finishing) {	// mark that we need to delete current thread
-         ASSERT(toBeDestroyed == NULL);
-	 toBeDestroyed = oldThread;
+    if (finishing) {  // mark that we need to delete current thread
+        ASSERT(toBeDestroyed == NULL);
+        toBeDestroyed = oldThread;
     }
-    
-    if (oldThread->space != NULL) {	// if this thread is a user program,
-        oldThread->SaveUserState(); 	// save the user's CPU registers
-	oldThread->space->SaveState();
+
+    if (oldThread->space != NULL) {  // if this thread is a user program,
+        oldThread->SaveUserState();  // save the user's CPU registers
+        oldThread->space->SaveState();
     }
-    
-    oldThread->CheckOverflow();		    // check if the old thread
-					    // had an undetected stack overflow
+
+    oldThread->CheckOverflow();  // check if the old thread
+                                 // had an undetected stack overflow
 
     kernel->currentThread = nextThread;  // switch to the next thread
     nextThread->setStatus(RUNNING);      // nextThread is now running
-    
-    DEBUG(dbgThread, "Switching from: " << oldThread->getName() << " to: " << nextThread->getName());
-    
-    // This is a machine-dependent assembly language routine defined 
+
+    DEBUG(dbgThread, "Switching from: " << oldThread->getName()
+                                        << " to: " << nextThread->getName());
+
+    // This is a machine-dependent assembly language routine defined
     // in switch.s.  You may have to think
     // a bit to figure out what happens after this, both from the point
     // of view of the thread and from the perspective of the "outside world".
@@ -133,19 +124,19 @@ Scheduler::Run (Thread *nextThread, bool finishing)
     SWITCH(oldThread, nextThread);
 
     // we're back, running oldThread
-      
+
     // interrupts are off when we return from switch!
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
     DEBUG(dbgThread, "Now in thread: " << oldThread->getName());
 
-    CheckToBeDestroyed();		// check if thread we were running
-					// before this one has finished
-					// and needs to be cleaned up
-    
-    if (oldThread->space != NULL) {	    // if there is an address space
-        oldThread->RestoreUserState();     // to restore, do it.
-	oldThread->space->RestoreState();
+    CheckToBeDestroyed();  // check if thread we were running
+                           // before this one has finished
+                           // and needs to be cleaned up
+
+    if (oldThread->space != NULL) {     // if there is an address space
+        oldThread->RestoreUserState();  // to restore, do it.
+        oldThread->space->RestoreState();
     }
 }
 
@@ -157,23 +148,19 @@ Scheduler::Run (Thread *nextThread, bool finishing)
 // 	point, we were still running on the old thread's stack!
 //----------------------------------------------------------------------
 
-void
-Scheduler::CheckToBeDestroyed()
-{
+void Scheduler::CheckToBeDestroyed() {
     if (toBeDestroyed != NULL) {
         delete toBeDestroyed;
-	toBeDestroyed = NULL;
+        toBeDestroyed = NULL;
     }
 }
- 
+
 //----------------------------------------------------------------------
 // Scheduler::Print
 // 	Print the scheduler state -- in other words, the contents of
 //	the ready list.  For debugging.
 //----------------------------------------------------------------------
-void
-Scheduler::Print()
-{
+void Scheduler::Print() {
     cout << "Ready list contents:\n";
     readyList->Apply(ThreadPrint);
 }

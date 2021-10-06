@@ -1,17 +1,17 @@
-// filehdr.cc 
+// filehdr.cc
 //	Routines for managing the disk file header (in UNIX, this
 //	would be called the i-node).
 //
-//	The file header is used to locate where on disk the 
+//	The file header is used to locate where on disk the
 //	file's data is stored.  We implement this as a fixed size
-//	table of pointers -- each entry in the table points to the 
+//	table of pointers -- each entry in the table points to the
 //	disk sector containing that portion of the file data
-//	(in other words, there are no indirect or doubly indirect 
+//	(in other words, there are no indirect or doubly indirect
 //	blocks). The table size is chosen so that the file header
-//	will be just big enough to fit in one disk sector, 
+//	will be just big enough to fit in one disk sector,
 //
-//      Unlike in a real system, we do not keep track of file permissions, 
-//	ownership, last modification date, etc., in the file header. 
+//      Unlike in a real system, we do not keep track of file permissions,
+//	ownership, last modification date, etc., in the file header.
 //
 //	A file header can be initialized in two ways:
 //	   for a new file, by modifying the in-memory data structure
@@ -19,7 +19,7 @@
 //	   for a file already on disk, by reading the file header from disk
 //
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
@@ -40,19 +40,16 @@
 //	"fileSize" is the bit map of free disk sectors
 //----------------------------------------------------------------------
 
-bool
-FileHeader::Allocate(PersistentBitmap *freeMap, int fileSize)
-{ 
+bool FileHeader::Allocate(PersistentBitmap *freeMap, int fileSize) {
     numBytes = fileSize;
-    numSectors  = divRoundUp(fileSize, SectorSize);
-    if (freeMap->NumClear() < numSectors)
-	return FALSE;		// not enough space
+    numSectors = divRoundUp(fileSize, SectorSize);
+    if (freeMap->NumClear() < numSectors) return FALSE;  // not enough space
 
     for (int i = 0; i < numSectors; i++) {
-	dataSectors[i] = freeMap->FindAndSet();
-	// since we checked that there was enough free space,
-	// we expect this to succeed
-	ASSERT(dataSectors[i] >= 0);
+        dataSectors[i] = freeMap->FindAndSet();
+        // since we checked that there was enough free space,
+        // we expect this to succeed
+        ASSERT(dataSectors[i] >= 0);
     }
     return TRUE;
 }
@@ -64,39 +61,33 @@ FileHeader::Allocate(PersistentBitmap *freeMap, int fileSize)
 //	"freeMap" is the bit map of free disk sectors
 //----------------------------------------------------------------------
 
-void 
-FileHeader::Deallocate(PersistentBitmap *freeMap)
-{
+void FileHeader::Deallocate(PersistentBitmap *freeMap) {
     for (int i = 0; i < numSectors; i++) {
-	ASSERT(freeMap->Test((int) dataSectors[i]));  // ought to be marked!
-	freeMap->Clear((int) dataSectors[i]);
+        ASSERT(freeMap->Test((int)dataSectors[i]));  // ought to be marked!
+        freeMap->Clear((int)dataSectors[i]);
     }
 }
 
 //----------------------------------------------------------------------
 // FileHeader::FetchFrom
-// 	Fetch contents of file header from disk. 
+// 	Fetch contents of file header from disk.
 //
 //	"sector" is the disk sector containing the file header
 //----------------------------------------------------------------------
 
-void
-FileHeader::FetchFrom(int sector)
-{
+void FileHeader::FetchFrom(int sector) {
     kernel->synchDisk->ReadSector(sector, (char *)this);
 }
 
 //----------------------------------------------------------------------
 // FileHeader::WriteBack
-// 	Write the modified contents of the file header back to disk. 
+// 	Write the modified contents of the file header back to disk.
 //
 //	"sector" is the disk sector to contain the file header
 //----------------------------------------------------------------------
 
-void
-FileHeader::WriteBack(int sector)
-{
-    kernel->synchDisk->WriteSector(sector, (char *)this); 
+void FileHeader::WriteBack(int sector) {
+    kernel->synchDisk->WriteSector(sector, (char *)this);
 }
 
 //----------------------------------------------------------------------
@@ -109,10 +100,8 @@ FileHeader::WriteBack(int sector)
 //	"offset" is the location within the file of the byte in question
 //----------------------------------------------------------------------
 
-int
-FileHeader::ByteToSector(int offset)
-{
-    return(dataSectors[offset / SectorSize]);
+int FileHeader::ByteToSector(int offset) {
+    return (dataSectors[offset / SectorSize]);
 }
 
 //----------------------------------------------------------------------
@@ -120,11 +109,7 @@ FileHeader::ByteToSector(int offset)
 // 	Return the number of bytes in the file.
 //----------------------------------------------------------------------
 
-int
-FileHeader::FileLength()
-{
-    return numBytes;
-}
+int FileHeader::FileLength() { return numBytes; }
 
 //----------------------------------------------------------------------
 // FileHeader::Print
@@ -132,25 +117,22 @@ FileHeader::FileLength()
 //	the data blocks pointed to by the file header.
 //----------------------------------------------------------------------
 
-void
-FileHeader::Print()
-{
+void FileHeader::Print() {
     int i, j, k;
     char *data = new char[SectorSize];
 
     printf("FileHeader contents.  File size: %d.  File blocks:\n", numBytes);
-    for (i = 0; i < numSectors; i++)
-	printf("%d ", dataSectors[i]);
+    for (i = 0; i < numSectors; i++) printf("%d ", dataSectors[i]);
     printf("\nFile contents:\n");
     for (i = k = 0; i < numSectors; i++) {
-	kernel->synchDisk->ReadSector(dataSectors[i], data);
+        kernel->synchDisk->ReadSector(dataSectors[i], data);
         for (j = 0; (j < SectorSize) && (k < numBytes); j++, k++) {
-	    if ('\040' <= data[j] && data[j] <= '\176')   // isprint(data[j])
-		printf("%c", data[j]);
+            if ('\040' <= data[j] && data[j] <= '\176')  // isprint(data[j])
+                printf("%c", data[j]);
             else
-		printf("\\%x", (unsigned char)data[j]);
-	}
-        printf("\n"); 
+                printf("\\%x", (unsigned char)data[j]);
+        }
+        printf("\n");
     }
-    delete [] data;
+    delete[] data;
 }
