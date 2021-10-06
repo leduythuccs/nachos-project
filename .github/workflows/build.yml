@@ -1,6 +1,14 @@
 name: build
 on: [push, pull_request]
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: install clang-format
+      run: sudo apt-get install -y clang-format
+    - name: Lint with clang-format
+      run: find code/ -iname *.h -o -iname *.cc -o -iname *.c | xargs clang-format --dry-run --Werror
   build:
     runs-on: ubuntu-latest
     steps:
