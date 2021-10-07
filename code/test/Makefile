@@ -40,11 +40,11 @@
 #
 #    Nachos assumes that the location of the program startup routine (the
 # 	location the kernel jumps to when the program initially starts up)
-#       is at location 0.  This means: start.o must be the first .o passed 
+#       is at location 0.  This means: start.o must be the first .o passed
 # 	to ld, in order for the routine "Start" to be loaded at location 0
 #
 #    When you make the test programs, you will see messages like these:
-#		numsections 3 
+#		numsections 3
 #		Loading 3 sections:
 #		        ".text", filepos 0xd0, mempos 0x0, size 0x440
 #		        ".data", filepos 0x510, mempos 0x440, size 0x0
@@ -112,7 +112,7 @@ ifeq ($(hosttype),unknown)
 PROGRAMS = unknownhost
 else
 # change this if you create a new test program!
-PROGRAMS = add halt shell matmult sort segments
+PROGRAMS = add halt shell matmult sort segments test_syscall
 endif
 
 all: $(PROGRAMS)
@@ -156,6 +156,13 @@ matmult.o: matmult.c
 matmult: matmult.o start.o
 	$(LD) $(LDFLAGS) start.o matmult.o -o matmult.coff
 	$(COFF2NOFF) matmult.coff matmult
+
+test_syscall.o: test_syscall.c
+	$(CC) $(CFLAGS) -c test_syscall.c
+test_syscall: test_syscall.o start.o
+	$(LD) $(LDFLAGS) start.o test_syscall.o -o test_syscall.coff
+	$(COFF2NOFF) test_syscall.coff test_syscall
+
 
 clean:
 	$(RM) -f *.o *.ii
