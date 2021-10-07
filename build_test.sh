@@ -6,3 +6,6 @@ make
 
 ../build.linux/nachos -x halt
 ../build.linux/nachos -x test_syscall
+
+# Read @ and make sure the output has @
+echo "@" | ../build.linux/nachos -x char_io | grep -q '@'
