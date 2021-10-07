@@ -38,6 +38,7 @@
 #define SC_Add 42
 #define SC_ReadChar 45
 #define SC_PrintChar 46
+#define SC_RandomNum 47
 
 #ifndef IN_ASM
 
@@ -63,6 +64,8 @@ int Add(int op1, int op2);
 char ReadChar();
 
 void PrintChar(char character);
+
+int RandomNum();
 
 /* Address space control operations: Exit, Exec, Execv, and Join */
 

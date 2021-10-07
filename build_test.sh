@@ -9,3 +9,4 @@ make
 
 # Read @ and make sure the output has @
 echo "@" | ../build.linux/nachos -x char_io | grep -q '@'
+../build.linux/nachos -x random

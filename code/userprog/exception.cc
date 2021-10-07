@@ -115,6 +115,13 @@ void handle_SC_PrintChar() {
     return move_program_counter();
 }
 
+void handle_SC_RandomNum() {
+    int result;
+    result = SysRandomNum();
+    kernel->machine->WriteRegister(2, result);
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -146,6 +153,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_ReadChar();
                 case SC_PrintChar:
                     return handle_SC_PrintChar();
+                case SC_RandomNum:
+                    return handle_SC_RandomNum();
                     /**
                      * Handle all not implemented syscalls
                      * If you want to write a new handler for syscall:
