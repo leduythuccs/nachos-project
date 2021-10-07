@@ -12,9 +12,15 @@
 #define __USERPROG_KSYSCALL_H__
 
 #include "kernel.h"
+#include "synchconsole.h"
 
 void SysHalt() { kernel->interrupt->Halt(); }
 
 int SysAdd(int op1, int op2) { return op1 + op2; }
 
+char SysReadChar() { return kernel->synchConsoleIn->GetChar(); }
+
+void SysPrintChar(char character) {
+    kernel->synchConsoleOut->PutChar(character);
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */

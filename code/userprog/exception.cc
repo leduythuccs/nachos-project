@@ -103,13 +103,25 @@ void handle_SC_Add() {
     return move_program_counter();
 }
 
+void handle_SC_ReadChar() {
+    char result = SysReadChar();
+    kernel->machine->WriteRegister(2, (int)result);
+    return move_program_counter();
+}
+
+void handle_SC_PrintChar() {
+    char character = (char)kernel->machine->ReadRegister(4);
+    SysPrintChar(character);
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
     DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
     switch (which) {
-        case NoException: // return control to kernel
+        case NoException:  // return control to kernel
             kernel->interrupt->setStatus(SystemMode);
             DEBUG(dbgSys, "Switch to system mode\n");
             break;
@@ -120,7 +132,7 @@ void ExceptionHandler(ExceptionType which) {
         case OverflowException:
         case IllegalInstrException:
         case NumExceptionTypes:
-            DEBUG(dbgSys, "An error occurs\n")
+            cerr << "Error " << which << " occurs\n";
             SysHalt();
             ASSERTNOTREACHED();
 
@@ -128,16 +140,20 @@ void ExceptionHandler(ExceptionType which) {
             switch (type) {
                 case SC_Halt:
                     return handle_SC_Halt();
-
                 case SC_Add:
                     return handle_SC_Add();
-                /**
-                 * Handle all not implemented syscalls
-                 * If you want to write a new handler for syscall:
-                 * - Remove it from this list below
-                 * - Write handle_SC_name()
-                 * - Add new case for SC_name
-                 */
+                case SC_ReadChar:
+                    return handle_SC_ReadChar();
+                case SC_PrintChar:
+                    return handle_SC_PrintChar();
+                    /**
+                     * Handle all not implemented syscalls
+                     * If you want to write a new handler for syscall:
+                     * - Remove it from this list below
+                     * - Write handle_SC_name()
+                     * - Add new case for SC_name
+                     */
+
                 case SC_Exit:
                 case SC_Exec:
                 case SC_Join:
