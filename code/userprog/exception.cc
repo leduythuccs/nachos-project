@@ -109,6 +109,21 @@ void ExceptionHandler(ExceptionType which) {
     DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
     switch (which) {
+        case NoException: // return control to kernel
+            kernel->interrupt->setStatus(SystemMode);
+            DEBUG(dbgSys, "Switch to system mode\n");
+            break;
+        case PageFaultException:
+        case ReadOnlyException:
+        case BusErrorException:
+        case AddressErrorException:
+        case OverflowException:
+        case IllegalInstrException:
+        case NumExceptionTypes:
+            DEBUG(dbgSys, "An error occurs\n")
+            SysHalt();
+            ASSERTNOTREACHED();
+
         case SyscallException:
             switch (type) {
                 case SC_Halt:
