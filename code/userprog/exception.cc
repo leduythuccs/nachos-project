@@ -42,11 +42,66 @@
 //	The result of the system call, if any, must be put back into r2.
 //
 // If you are handling a system call, don't forget to increment the pc
-// before returning. (Or else you'll loop making the same system call forever!)
+// before returning (by calling move_program_counter()). (Or else you'll loop
+// making the same system call forever!)
 //
 //	"which" is the kind of exception.  The list of possible exceptions
 //	is in machine.h.
 //----------------------------------------------------------------------
+
+/**
+ * Modify program counter
+ * This code is adapted from `../machine/mipssim.cc`, line 667
+ **/
+void move_program_counter() {
+    /* set previous programm counter (debugging only)
+     * similar to: registers[PrevPCReg] = registers[PCReg];*/
+    kernel->machine->WriteRegister(PrevPCReg,
+                                   kernel->machine->ReadRegister(PCReg));
+
+    /* set programm counter to next instruction
+     * similar to: registers[PCReg] = registers[NextPCReg]*/
+    kernel->machine->WriteRegister(PCReg,
+                                   kernel->machine->ReadRegister(NextPCReg));
+
+    /* set next programm counter for brach execution
+     * similar to: registers[NextPCReg] = pcAfter;*/
+    kernel->machine->WriteRegister(
+        NextPCReg, kernel->machine->ReadRegister(NextPCReg) + 4);
+}
+
+/**
+ * Handle not implemented syscall
+ * This method will write the syscall to debug log and increase
+ * the program counter.
+ */
+void handle_not_implemented_SC(int type) {
+    DEBUG(dbgSys, "Not yet implemented syscall " << type << "\n");
+    return move_program_counter();
+}
+
+void handle_SC_Halt() {
+    DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
+    SysHalt();
+    ASSERTNOTREACHED();
+}
+
+void handle_SC_Add() {
+    DEBUG(dbgSys, "Add " << kernel->machine->ReadRegister(4) << " + "
+                         << kernel->machine->ReadRegister(5) << "\n");
+
+    /* Process SysAdd Systemcall*/
+    int result;
+    result = SysAdd(
+        /* int op1 */ (int)kernel->machine->ReadRegister(4),
+        /* int op2 */ (int)kernel->machine->ReadRegister(5));
+
+    DEBUG(dbgSys, "Add returning with " << result << "\n");
+    /* Prepare Result */
+    kernel->machine->WriteRegister(2, (int)result);
+
+    return move_program_counter();
+}
 
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
@@ -57,50 +112,33 @@ void ExceptionHandler(ExceptionType which) {
         case SyscallException:
             switch (type) {
                 case SC_Halt:
-                    DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
-
-                    SysHalt();
-
-                    ASSERTNOTREACHED();
-                    break;
+                    return handle_SC_Halt();
 
                 case SC_Add:
-                    DEBUG(dbgSys,
-                          "Add " << kernel->machine->ReadRegister(4) << " + "
-                                 << kernel->machine->ReadRegister(5) << "\n");
-
-                    /* Process SysAdd Systemcall*/
-                    int result;
-                    result = SysAdd(
-                        /* int op1 */ (int)kernel->machine->ReadRegister(4),
-                        /* int op2 */ (int)kernel->machine->ReadRegister(5));
-
-                    DEBUG(dbgSys, "Add returning with " << result << "\n");
-                    /* Prepare Result */
-                    kernel->machine->WriteRegister(2, (int)result);
-
-                    /* Modify return point */
-                    {
-                        /* set previous programm counter (debugging only)*/
-                        kernel->machine->WriteRegister(
-                            PrevPCReg, kernel->machine->ReadRegister(PCReg));
-
-                        /* set programm counter to next instruction (all
-                         * Instructions are 4 byte wide)*/
-                        kernel->machine->WriteRegister(
-                            PCReg, kernel->machine->ReadRegister(PCReg) + 4);
-
-                        /* set next programm counter for brach execution */
-                        kernel->machine->WriteRegister(
-                            NextPCReg,
-                            kernel->machine->ReadRegister(PCReg) + 4);
-                    }
-
-                    return;
-
-                    ASSERTNOTREACHED();
-
-                    break;
+                    return handle_SC_Add();
+                /**
+                 * Handle all not implemented syscalls
+                 * If you want to write a new handler for syscall:
+                 * - Remove it from this list below
+                 * - Write handle_SC_name()
+                 * - Add new case for SC_name
+                 */
+                case SC_Exit:
+                case SC_Exec:
+                case SC_Join:
+                case SC_Create:
+                case SC_Remove:
+                case SC_Open:
+                case SC_Read:
+                case SC_Write:
+                case SC_Seek:
+                case SC_Close:
+                case SC_ThreadFork:
+                case SC_ThreadYield:
+                case SC_ExecV:
+                case SC_ThreadExit:
+                case SC_ThreadJoin:
+                    return handle_not_implemented_SC(type);
 
                 default:
                     cerr << "Unexpected system call " << type << "\n";
