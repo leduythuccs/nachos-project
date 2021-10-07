@@ -134,6 +134,46 @@ void handle_SC_RandomNum() {
     return move_program_counter();
 }
 
+#define MAX_READ_STRING_LENGTH 255
+void handle_SC_ReadString() {
+    int memPtr = kernel->machine->ReadRegister(4);  // read address of C-string
+    int length = kernel->machine->ReadRegister(5);  // read length of C-string
+    if (length > MAX_READ_STRING_LENGTH) {  // avoid allocating large memory
+        DEBUG(dbgSys, "String length exceeds " << MAX_READ_STRING_LENGTH);
+        SysHalt();
+    }
+    char* buffer = SysReadString(length);
+    for (int i = 0; i <= length; i++) {
+        kernel->machine->WriteMem(memPtr + i, 1,
+                                  buffer[i]);  // copy characters to user space
+    }
+    delete[] buffer;
+    return move_program_counter();
+}
+
+void handle_SC_PrintString() {
+    int memPtr = kernel->machine->ReadRegister(4);  // read address of C-string
+    int length = 0;
+    bool stop = false;
+    do {
+        int oneChar;
+        kernel->machine->ReadMem(memPtr + length, 1, &oneChar);
+        stop = oneChar == '\0';
+        length++;
+    } while (!stop);
+
+    char* buffer = new char[length - 1];
+    for (int i = 0; i < length; i++) {
+        int oneChar;
+        kernel->machine->ReadMem(memPtr + i, 1,
+                                 &oneChar);  // copy characters to kernel space
+        buffer[i] = (unsigned char)oneChar;
+    }
+    SysPrintString(buffer, length - 1);
+    delete[] buffer;
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -171,6 +211,10 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_PrintChar();
                 case SC_RandomNum:
                     return handle_SC_RandomNum();
+                case SC_ReadString:
+                    return handle_SC_ReadString();
+                case SC_PrintString:
+                    return handle_SC_PrintString();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
