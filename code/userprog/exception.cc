@@ -103,6 +103,18 @@ void handle_SC_Add() {
     return move_program_counter();
 }
 
+void handle_SC_ReadNum() {
+    int result = SysReadNum();
+    kernel->machine->WriteRegister(2, result);
+    return move_program_counter();
+}
+
+void handle_SC_PrintNum() {
+    int character = kernel->machine->ReadRegister(4);
+    SysPrintNum(character);
+    return move_program_counter();
+}
+
 void handle_SC_ReadChar() {
     char result = SysReadChar();
     kernel->machine->WriteRegister(2, (int)result);
@@ -149,20 +161,23 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Halt();
                 case SC_Add:
                     return handle_SC_Add();
+                case SC_ReadNum:
+                    return handle_SC_ReadNum();
+                case SC_PrintNum:
+                    return handle_SC_PrintNum();
                 case SC_ReadChar:
                     return handle_SC_ReadChar();
                 case SC_PrintChar:
                     return handle_SC_PrintChar();
                 case SC_RandomNum:
                     return handle_SC_RandomNum();
-                    /**
-                     * Handle all not implemented syscalls
-                     * If you want to write a new handler for syscall:
-                     * - Remove it from this list below
-                     * - Write handle_SC_name()
-                     * - Add new case for SC_name
-                     */
-
+                /**
+                 * Handle all not implemented syscalls
+                 * If you want to write a new handler for syscall:
+                 * - Remove it from this list below
+                 * - Write handle_SC_name()
+                 * - Add new case for SC_name
+                 */
                 case SC_Exit:
                 case SC_Exec:
                 case SC_Join:
