@@ -7,4 +7,5 @@
 int main() {
     int result;
     result = RandomNum();
+    PrintNum(result);
 }

@@ -33,4 +33,17 @@ echo "255 "$(head -c 255 < /dev/zero | tr '\0' 'a') | \
     ../build.linux/nachos -x str_io | \
     grep -q $(head -c 255 < /dev/zero | tr '\0' 'a')"Machine halting!"
 
+../build.linux/nachos -x ascii | grep -q "33 !"
+../build.linux/nachos -x ascii | grep -q "126 ~"
+echo "5 3 4 1 5 2 1" | ../build.linux/nachos -x bubblesort | grep -q '1 2 3 4 5 Machine halting!'
+echo "5 3 4 1 5 2 2" | ../build.linux/nachos -x bubblesort | grep -q '5 4 3 2 1 Machine halting!'
+echo "5 -3 4 1 -5 2 1" | ../build.linux/nachos -x bubblesort | grep -q '\-5 \-3 1 2 4 Machine halting!'
+echo "a 5 3 4 1 5 2 1" | ../build.linux/nachos -x bubblesort | grep -q 'Sorted array: Machine halting!'
+echo "-5 5 3 4 1 5 2 1" | ../build.linux/nachos -x bubblesort | grep -q 'n has to be an integer between 1 and 100 (inclusive), please try again'
+echo "101 5 3 4 1 5 2 1" | ../build.linux/nachos -x bubblesort | grep -q 'n has to be an integer between 1 and 100 (inclusive), please try again'
+echo "5 3 4 1 5 2 3 1" | ../build.linux/nachos -x bubblesort | grep -q 'Wrong input, please try again'
+echo "5 a 4 1 5 2 1" | ../build.linux/nachos -x bubblesort | grep -q '0 1 2 4 5 Machine halting!'
+
+../build.linux/nachos -x help | grep -q "\- The program will print out the sorted array and then exit"
+
 echo "Success!"
