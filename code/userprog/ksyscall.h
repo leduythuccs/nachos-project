@@ -131,4 +131,29 @@ void SysPrintString(char* buffer, int length) {
         kernel->synchConsoleOut->PutChar(buffer[i]);
     }
 }
+
+bool SysCreateFile(char* fileName) {
+    bool success;
+    int fileNameLength = strlen(fileName);
+
+    if (fileNameLength == 0) {
+        DEBUG('a', "\nFile name can't be empty");
+        success = false;
+
+    } else if (fileName == NULL) {
+        DEBUG('a', "\nNot enough memory in system");
+        success = false;
+
+    } else {
+        DEBUG('a', "\nFile's name read successfully");
+        if (!kernel->fileSystem->Create(fileName)) {
+            DEBUG('a', "\nError creating file");
+            success = false;
+        } else {
+            success = true;
+        }
+    }
+
+    return success;
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */
