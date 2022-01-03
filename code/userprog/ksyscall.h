@@ -137,17 +137,17 @@ bool SysCreateFile(char* fileName) {
     int fileNameLength = strlen(fileName);
 
     if (fileNameLength == 0) {
-        DEBUG('a', "\nFile name can't be empty");
+        DEBUG(dbgSys, "\nFile name can't be empty");
         success = false;
 
     } else if (fileName == NULL) {
-        DEBUG('a', "\nNot enough memory in system");
+        DEBUG(dbgSys, "\nNot enough memory in system");
         success = false;
 
     } else {
-        DEBUG('a', "\nFile's name read successfully");
+        DEBUG(dbgSys, "\nFile's name read successfully");
         if (!kernel->fileSystem->Create(fileName)) {
-            DEBUG('a', "\nError creating file");
+            DEBUG(dbgSys, "\nError creating file");
             success = false;
         } else {
             success = true;
