@@ -48,6 +48,12 @@ echo "5 a 4 1 5 2 1" | ../build.linux/nachos -x bubblesort | grep -q '0 1 2 4 5 
 
 echo "0" | ../build.linux/nachos -x create_file | grep -q 'Create file failed'
 echo "a" | ../build.linux/nachos -x create_file | grep -q 'Create file failed'
-# echo "7 abc.txt" | ../build.linux/nachos -x create_file | test -f "../abc.txt"
+
+echo "7 abc.txt" | ../build.linux/nachos -x create_file
+test -f "abc.txt"
+
+mkdir "xyz"
+echo "11 xyz/abc.txt" | ../build.linux/nachos -x create_file
+test -f "xyz/abc.txt"
 
 echo "Success!"
