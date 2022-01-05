@@ -19,7 +19,7 @@ class FileTable {
         fileOpenMode = new int[FILE_MAX];
         fileOpenMode[CONSOLE_IN] = MODE_READ;
         fileOpenMode[CONSOLE_OUT] = MODE_WRITE;
-        
+
         fileDescriptor = new int[FILE_MAX];
     }
 
@@ -36,8 +36,10 @@ class FileTable {
             return -1;
         }
 
-        if (openMode == MODE_READWRITE) fileDescriptor[freeIndex] = OpenForReadWrite(fileName, FALSE);
-        if (openMode == MODE_READ) fileDescriptor[freeIndex] = OpenForRead(fileName, FALSE);
+        if (openMode == MODE_READWRITE)
+            fileDescriptor[freeIndex] = OpenForReadWrite(fileName, FALSE);
+        if (openMode == MODE_READ)
+            fileDescriptor[freeIndex] = OpenForRead(fileName, FALSE);
 
         if (fileDescriptor[freeIndex] == -1) return -1;
         openFile[freeIndex] = new OpenFile(fileDescriptor[freeIndex]);
