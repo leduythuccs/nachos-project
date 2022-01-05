@@ -131,4 +131,44 @@ void SysPrintString(char* buffer, int length) {
         kernel->synchConsoleOut->PutChar(buffer[i]);
     }
 }
+
+bool SysCreateFile(char* fileName) {
+    bool success;
+    int fileNameLength = strlen(fileName);
+
+    if (fileNameLength == 0) {
+        DEBUG(dbgSys, "\nFile name can't be empty");
+        success = false;
+
+    } else if (fileName == NULL) {
+        DEBUG(dbgSys, "\nNot enough memory in system");
+        success = false;
+
+    } else {
+        DEBUG(dbgSys, "\nFile's name read successfully");
+        if (!kernel->fileSystem->Create(fileName)) {
+            DEBUG(dbgSys, "\nError creating file");
+            success = false;
+        } else {
+            success = true;
+        }
+    }
+
+    return success;
+}
+
+int SysOpen(char* fileName, int type){
+    if (type != 0 && type != 1) return -1;
+
+    int id = kernel->fileSystem->fileTable->Insert(fileName, type);
+    if (id == -1) return -1;
+    DEBUG(dbgSys, "\nOpened file");
+    return id;
+    
+}
+
+int SysClose(int id){
+    int res = kernel->fileSystem->fileTable->Remove(id);
+    return res;
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */

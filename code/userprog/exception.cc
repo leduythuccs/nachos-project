@@ -49,6 +49,28 @@
 //	is in machine.h.
 //----------------------------------------------------------------------
 
+char* stringUser2System(int addr) {
+    int length = 0;
+    bool stop = false;
+    char* str;
+
+    do {
+        int oneChar;
+        kernel->machine->ReadMem(addr + length, 1, &oneChar);
+        stop = oneChar == '\0';
+        length++;
+    } while (!stop);
+
+    str = new char[length - 1];
+    for (int i = 0; i < length; i++) {
+        int oneChar;
+        kernel->machine->ReadMem(addr + i, 1,
+                                 &oneChar);  // copy characters to kernel space
+        str[i] = (unsigned char)oneChar;
+    }
+    return str;
+}
+
 /**
  * Modify program counter
  * This code is adapted from `../machine/mipssim.cc`, line 667
@@ -174,6 +196,37 @@ void handle_SC_PrintString() {
     return move_program_counter();
 }
 
+void handle_SC_CreateFile() {
+    int virtAddr = kernel->machine->ReadRegister(4);
+    char* fileName = stringUser2System(virtAddr);
+
+    if (SysCreateFile(fileName))
+        kernel->machine->WriteRegister(2, 0);
+    else
+        kernel->machine->WriteRegister(2, -1);
+
+    delete[] fileName;
+    return move_program_counter();
+}
+
+void handle_SC_Open(){
+    int virtAddr = kernel->machine->ReadRegister(4);
+    char* fileName = stringUser2System(virtAddr);
+    int type = kernel->machine->ReadRegister(5);
+
+    kernel->machine->WriteRegister(2, SysOpen(fileName, type));
+
+    delete fileName;
+    return move_program_counter();
+}
+
+void handle_SC_Close(){
+    int id = kernel->machine->ReadRegister(4);
+    kernel->machine->WriteRegister(2, SysClose(id));
+
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -215,6 +268,12 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_ReadString();
                 case SC_PrintString:
                     return handle_SC_PrintString();
+                case SC_CreateFile:
+                    return handle_SC_CreateFile();
+                case SC_Open:
+                    return handle_SC_Open();
+                case SC_Close:
+                    return handle_SC_Close();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
@@ -227,11 +286,9 @@ void ExceptionHandler(ExceptionType which) {
                 case SC_Join:
                 case SC_Create:
                 case SC_Remove:
-                case SC_Open:
                 case SC_Read:
                 case SC_Write:
                 case SC_Seek:
-                case SC_Close:
                 case SC_ThreadFork:
                 case SC_ThreadYield:
                 case SC_ExecV:
