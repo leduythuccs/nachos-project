@@ -17,8 +17,8 @@ public:
     FileTable(){
         openFile = new OpenFile*[FILE_MAX];
         fileOpenMode = new int[FILE_MAX];
-        fileOpenMode[CONSOLE_IN] = READ;
-        fileOpenMode[CONSOLE_OUT] = WRITE;
+        fileOpenMode[CONSOLE_IN] = MODE_READ;
+        fileOpenMode[CONSOLE_OUT] = MODE_WRITE;
 
         fileDescriptor = new int[FILE_MAX];
     }
