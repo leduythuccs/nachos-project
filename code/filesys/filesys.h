@@ -36,13 +36,18 @@
 #include "copyright.h"
 #include "sysdep.h"
 #include "openfile.h"
+#include "filetable.h"
 
 #ifdef FILESYS_STUB  // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
 class FileSystem {
    public:
-    FileSystem() {}
+    FileTable *fileTable;
+
+    FileSystem() { fileTable = new FileTable; }
+
+    ~FileSystem() { delete fileTable; }
 
     bool Create(char *name) {
         int fileDescriptor = OpenForWrite(name);
@@ -58,6 +63,12 @@ class FileSystem {
         if (fileDescriptor == -1) return NULL;
         return new OpenFile(fileDescriptor);
     }
+
+    int Open(char *name, int openMode) {
+        return fileTable->Insert(name, openMode);
+    }
+
+    int Close(int id) { return fileTable->Remove(id); }
 
     bool Remove(char *name) { return Unlink(name) == 0; }
 };
