@@ -57,9 +57,13 @@ echo "11 xyz/abc.txt" | ../build.linux/nachos -x create_file
 test -f "xyz/abc.txt"
 
 echo "random text to write to file" > "abc.txt"
+echo "" > "abc1.txt"
+echo "random text to write to file" > "abc2.txt"
+printf "random text to write to file\nrandom text to write to file\n" > "abc3.txt"
 
 ../build.linux/nachos -x readwrite
 
 diff -q abc.txt abc1.txt
+diff -q abc2.txt abc3.txt
 
 echo "Success!"

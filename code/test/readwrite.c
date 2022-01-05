@@ -24,4 +24,18 @@ int main() {
     PrintString(" characters: ");
     PrintString(buffer);
     Close(fileid);
+
+    fileid = Open("abc2.txt", MODE_READWRITE);
+    read = Read(buffer, 50, fileid);
+    PrintString("Read ");
+    PrintNum(read);
+    PrintString(" characters: ");
+    PrintString(buffer);
+    // Write to the same file
+    write = Write(buffer, read, fileid);
+    PrintString("Write ");
+    PrintNum(write);
+    PrintString(" characters: ");
+    PrintString(buffer);
+    Close(fileid);
 }
