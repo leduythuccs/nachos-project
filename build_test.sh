@@ -52,8 +52,14 @@ echo "a" | ../build.linux/nachos -x create_file | grep -q 'Create file failed'
 echo "7 abc.txt" | ../build.linux/nachos -x create_file
 test -f "abc.txt"
 
-mkdir "xyz"
+mkdir -p "xyz"
 echo "11 xyz/abc.txt" | ../build.linux/nachos -x create_file
 test -f "xyz/abc.txt"
+
+echo "random text to write to file" > "abc.txt"
+
+../build.linux/nachos -x readwrite
+
+diff -q abc.txt abc1.txt
 
 echo "Success!"

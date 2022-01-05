@@ -1,11 +1,12 @@
 #include "openfile.h"
 #include "sysdep.h"
+
 #define FILE_MAX 10
 #define CONSOLE_IN 0
 #define CONSOLE_OUT 1
 #define MODE_READWRITE 0
-#define MODE_WRITE 1
-#define MODE_READ 2
+#define MODE_READ 1
+#define MODE_WRITE 2
 
 class FileTable {
    private:
@@ -56,6 +57,21 @@ class FileTable {
             return 0;
         }
         return -1;
+    }
+
+    int Read(char* buffer, int charCount, int index) {
+        if (index >= FILE_MAX) return -1;
+        if (openFile[index] == NULL) return -1;
+        int result = openFile[index]->Read(buffer, charCount);
+        // if we cannot read enought bytes, we should return -2
+        if (result != charCount) return -2;
+        return result;
+    }
+
+    int Write(char* buffer, int charCount, int index) {
+        if (index >= FILE_MAX) return -1;
+        if (openFile[index] == NULL) return -1;
+        return openFile[index]->Write(buffer, charCount);
     }
 
     ~FileTable() {

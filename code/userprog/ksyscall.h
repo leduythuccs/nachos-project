@@ -167,4 +167,12 @@ int SysOpen(char* fileName, int type) {
 }
 
 int SysClose(int id) { return kernel->fileSystem->Close(id); }
+
+int SysRead(char* buffer, int charCount, int fileId) {
+    return kernel->fileSystem->Read(buffer, charCount, fileId);
+}
+
+int SysWrite(char* buffer, int charCount, int fileId) {
+    return kernel->fileSystem->Write(buffer, charCount, fileId);
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */

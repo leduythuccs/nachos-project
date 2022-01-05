@@ -68,7 +68,8 @@ char* stringUser2System(int addr, int convert_length = -1) {
         length++;
         // if convert_length == -1, we use '\0' to terminate the process
         // otherwise, we use convert_length to terminate the process
-        stop = ((oneChar == '\0' && convert_length == -1) || length == convert_length);
+        stop = ((oneChar == '\0' && convert_length == -1) ||
+                length == convert_length);
     } while (!stop);
 
     str = new char[length];
@@ -238,6 +239,38 @@ void handle_SC_Close() {
     return move_program_counter();
 }
 
+void handle_SC_Read() {
+    int virtAddr = kernel->machine->ReadRegister(4);
+    int charCount = kernel->machine->ReadRegister(5);
+    char* buffer = stringUser2System(virtAddr, charCount);
+    int fileId = kernel->machine->ReadRegister(6);
+
+    DEBUG(dbgFile,
+          "Read " << charCount << " chars from file " << fileId << "\n");
+
+    kernel->machine->WriteRegister(2, SysRead(buffer, charCount, fileId));
+    StringSys2User(buffer, virtAddr, charCount);
+
+    delete[] buffer;
+    return move_program_counter();
+}
+
+void handle_SC_Write() {
+    int virtAddr = kernel->machine->ReadRegister(4);
+    int charCount = kernel->machine->ReadRegister(5);
+    char* buffer = stringUser2System(virtAddr, charCount);
+    int fileId = kernel->machine->ReadRegister(6);
+
+    DEBUG(dbgFile,
+          "Write " << charCount << " chars to file " << fileId << "\n");
+
+    kernel->machine->WriteRegister(2, SysWrite(buffer, charCount, fileId));
+    StringSys2User(buffer, virtAddr, charCount);
+
+    delete[] buffer;
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -285,6 +318,10 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Open();
                 case SC_Close:
                     return handle_SC_Close();
+                case SC_Read:
+                    return handle_SC_Read();
+                case SC_Write:
+                    return handle_SC_Write();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
@@ -297,8 +334,6 @@ void ExceptionHandler(ExceptionType which) {
                 case SC_Join:
                 case SC_Create:
                 case SC_Remove:
-                case SC_Read:
-                case SC_Write:
                 case SC_Seek:
                 case SC_ThreadFork:
                 case SC_ThreadYield:
