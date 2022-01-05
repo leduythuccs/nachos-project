@@ -156,4 +156,19 @@ bool SysCreateFile(char* fileName) {
 
     return success;
 }
+
+int SysOpen(char* fileName, int type){
+    if (type != 0 && type != 1) return -1;
+
+    int id = kernel->fileSystem->fileTable->Insert(fileName, type);
+    if (id == -1) return -1;
+    DEBUG(dbgSys, "\nOpened file");
+    return id;
+    
+}
+
+int SysClose(int id){
+    int res = kernel->fileSystem->fileTable->Remove(id);
+    return res;
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */

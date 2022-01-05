@@ -209,6 +209,24 @@ void handle_SC_CreateFile() {
     return move_program_counter();
 }
 
+void handle_SC_Open(){
+    int virtAddr = kernel->machine->ReadRegister(4);
+    char* fileName = stringUser2System(virtAddr);
+    int type = kernel->machine->ReadRegister(5);
+
+    kernel->machine->WriteRegister(2, SysOpen(fileName, type));
+
+    delete fileName;
+    return move_program_counter();
+}
+
+void handle_SC_Close(){
+    int id = kernel->machine->ReadRegister(4);
+    kernel->machine->WriteRegister(2, SysClose(id));
+
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -252,6 +270,10 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_PrintString();
                 case SC_CreateFile:
                     return handle_SC_CreateFile();
+                case SC_Open:
+                    return handle_SC_Open();
+                case SC_Close:
+                    return handle_SC_Close();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
@@ -264,11 +286,9 @@ void ExceptionHandler(ExceptionType which) {
                 case SC_Join:
                 case SC_Create:
                 case SC_Remove:
-                case SC_Open:
                 case SC_Read:
                 case SC_Write:
                 case SC_Seek:
-                case SC_Close:
                 case SC_ThreadFork:
                 case SC_ThreadYield:
                 case SC_ExecV:
