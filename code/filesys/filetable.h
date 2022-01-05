@@ -70,7 +70,7 @@ class FileTable {
 
     int Write(char* buffer, int charCount, int index) {
         if (index >= FILE_MAX) return -1;
-        if (openFile[index] == NULL) return -1;
+        if (openFile[index] == NULL || fileOpenMode[index] == MODE_READ) return -1;
         return openFile[index]->Write(buffer, charCount);
     }
 
