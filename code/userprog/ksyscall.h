@@ -157,17 +157,14 @@ bool SysCreateFile(char* fileName) {
     return success;
 }
 
-int SysOpen(char* fileName, int type){
+int SysOpen(char* fileName, int type) {
     if (type != 0 && type != 1) return -1;
 
     int id = kernel->fileSystem->Open(fileName, type);
     if (id == -1) return -1;
     DEBUG(dbgSys, "\nOpened file");
     return id;
-    
 }
 
-int SysClose(int id){
-    return kernel->fileSystem->Close(id);
-}
+int SysClose(int id) { return kernel->fileSystem->Close(id); }
 #endif /* ! __USERPROG_KSYSCALL_H__ */

@@ -42,16 +42,12 @@
 // calls to UNIX, until the real file system
 // implementation is available
 class FileSystem {
-public:
-    FileTable* fileTable;
-    
-    FileSystem() {
-        fileTable = new FileTable;
-    }
+   public:
+    FileTable *fileTable;
 
-    ~FileSystem(){
-        delete fileTable;
-    }
+    FileSystem() { fileTable = new FileTable; }
+
+    ~FileSystem() { delete fileTable; }
 
     bool Create(char *name) {
         int fileDescriptor = OpenForWrite(name);
@@ -68,14 +64,12 @@ public:
         return new OpenFile(fileDescriptor);
     }
 
-    int Open(char* name, int openMode){
+    int Open(char *name, int openMode) {
         return fileTable->Insert(name, openMode);
     }
 
-    int Close(int id){
-        return fileTable->Remove(id);
-    }
-    
+    int Close(int id) { return fileTable->Remove(id); }
+
     bool Remove(char *name) { return Unlink(name) == 0; }
 };
 

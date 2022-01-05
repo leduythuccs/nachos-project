@@ -5,7 +5,7 @@ int main() {
     int length, id;
     int i;
 
-    for (i = 0; i < 9; i++){
+    for (i = 0; i < 9; i++) {
         if ((id = Open(fileName, 0)) != -1) {
             PrintString("File ");
             PrintString(fileName);

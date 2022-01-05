@@ -209,7 +209,7 @@ void handle_SC_CreateFile() {
     return move_program_counter();
 }
 
-void handle_SC_Open(){
+void handle_SC_Open() {
     int virtAddr = kernel->machine->ReadRegister(4);
     char* fileName = stringUser2System(virtAddr);
     int type = kernel->machine->ReadRegister(5);
@@ -220,7 +220,7 @@ void handle_SC_Open(){
     return move_program_counter();
 }
 
-void handle_SC_Close(){
+void handle_SC_Close() {
     int id = kernel->machine->ReadRegister(4);
     kernel->machine->WriteRegister(2, SysClose(id));
 
