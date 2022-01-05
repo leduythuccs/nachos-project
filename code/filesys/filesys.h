@@ -49,6 +49,10 @@ public:
         fileTable = new FileTable;
     }
 
+    ~FileSystem(){
+        delete fileTable;
+    }
+
     bool Create(char *name) {
         int fileDescriptor = OpenForWrite(name);
 
@@ -68,7 +72,10 @@ public:
         return fileTable->Insert(name, openMode);
     }
 
-
+    int Close(int id){
+        return fileTable->Remove(id);
+    }
+    
     bool Remove(char *name) { return Unlink(name) == 0; }
 };
 

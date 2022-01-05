@@ -1,6 +1,12 @@
 #include "openfile.h"
 #include "sysdep.h"
 #define FILE_MAX 10
+#define CONSOLE_IN  0
+#define CONSOLE_OUT 1
+#define MODE_READWRITE  0
+#define MODE_WRITE      1
+#define MODE_READ       2
+
 
 class FileTable{
 private:
@@ -11,6 +17,9 @@ public:
     FileTable(){
         openFile = new OpenFile*[FILE_MAX];
         fileOpenMode = new int[FILE_MAX];
+        fileOpenMode[CONSOLE_IN] = READ;
+        fileOpenMode[CONSOLE_OUT] = WRITE;
+
         fileDescriptor = new int[FILE_MAX];
     }
 
