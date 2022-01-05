@@ -49,7 +49,15 @@
 //	is in machine.h.
 //----------------------------------------------------------------------
 
-char* stringUser2System(int addr) {
+/**
+ * @brief Convert user string to system string
+ *
+ * @param addr addess of user string
+ * @param convert_length set max length of string to convert, leave
+ * blank to convert all characters of user string
+ * @return char*
+ */
+char* stringUser2System(int addr, int convert_length = -1) {
     int length = 0;
     bool stop = false;
     char* str;
@@ -57,11 +65,13 @@ char* stringUser2System(int addr) {
     do {
         int oneChar;
         kernel->machine->ReadMem(addr + length, 1, &oneChar);
-        stop = oneChar == '\0';
         length++;
+        // if convert_length == -1, we use '\0' to terminate the process
+        // otherwise, we use convert_length to terminate the process
+        stop = ((oneChar == '\0' && convert_length == -1) || length == convert_length);
     } while (!stop);
 
-    str = new char[length - 1];
+    str = new char[length];
     for (int i = 0; i < length; i++) {
         int oneChar;
         kernel->machine->ReadMem(addr + i, 1,
@@ -69,6 +79,24 @@ char* stringUser2System(int addr) {
         str[i] = (unsigned char)oneChar;
     }
     return str;
+}
+
+/**
+ * @brief Convert system string to user string
+ *
+ * @param str string to convert
+ * @param addr addess of user string
+ * @param convert_length set max length of string to convert, leave
+ * blank to convert all characters of system string
+ * @return void
+ */
+void StringSys2User(char* str, int addr, int convert_length = -1) {
+    int length = (convert_length == -1 ? strlen(str) : convert_length);
+    for (int i = 0; i < length; i++) {
+        kernel->machine->WriteMem(addr + i, 1,
+                                  str[i]);  // copy characters to user space
+    }
+    kernel->machine->WriteMem(addr + length, 1, '\0');
 }
 
 /**
@@ -165,33 +193,16 @@ void handle_SC_ReadString() {
         SysHalt();
     }
     char* buffer = SysReadString(length);
-    for (int i = 0; i <= length; i++) {
-        kernel->machine->WriteMem(memPtr + i, 1,
-                                  buffer[i]);  // copy characters to user space
-    }
+    StringSys2User(buffer, memPtr);
     delete[] buffer;
     return move_program_counter();
 }
 
 void handle_SC_PrintString() {
     int memPtr = kernel->machine->ReadRegister(4);  // read address of C-string
-    int length = 0;
-    bool stop = false;
-    do {
-        int oneChar;
-        kernel->machine->ReadMem(memPtr + length, 1, &oneChar);
-        stop = oneChar == '\0';
-        length++;
-    } while (!stop);
+    char* buffer = stringUser2System(memPtr);
 
-    char* buffer = new char[length - 1];
-    for (int i = 0; i < length; i++) {
-        int oneChar;
-        kernel->machine->ReadMem(memPtr + i, 1,
-                                 &oneChar);  // copy characters to kernel space
-        buffer[i] = (unsigned char)oneChar;
-    }
-    SysPrintString(buffer, length - 1);
+    SysPrintString(buffer, strlen(buffer));
     delete[] buffer;
     return move_program_counter();
 }
