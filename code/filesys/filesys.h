@@ -70,6 +70,14 @@ class FileSystem {
 
     int Close(int id) { return fileTable->Remove(id); }
 
+    int Read(char *buffer, int charCount, int id) {
+        return fileTable->Read(buffer, charCount, id);
+    }
+
+    int Write(char *buffer, int charCount, int id) {
+        return fileTable->Write(buffer, charCount, id);
+    }
+
     bool Remove(char *name) { return Unlink(name) == 0; }
 };
 

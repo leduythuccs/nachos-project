@@ -50,6 +50,22 @@ char SynchConsoleInput::GetChar() {
 }
 
 //----------------------------------------------------------------------
+// SynchConsoleInput::GetString
+//      Read a string from keyboard to buffer, return number of read characters.
+//----------------------------------------------------------------------
+
+int SynchConsoleInput::GetString(char *buffer, int size) {
+    for (int i = 0; i < size; ++i) {
+        buffer[i] = GetChar();
+        if (buffer[i] == EOF) {
+            buffer[i] = 0;
+            return -2;
+        }
+    }
+    return size;
+}
+
+//----------------------------------------------------------------------
 // SynchConsoleInput::CallBack
 //      Interrupt handler called when keystroke is hit; wake up
 //	anyone waiting.
@@ -92,6 +108,17 @@ void SynchConsoleOutput::PutChar(char ch) {
     consoleOutput->PutChar(ch);
     waitFor->P();
     lock->Release();
+}
+
+//----------------------------------------------------------------------
+// SynchConsoleOutput::PutString
+//      Write a string to the console display, return number of written
+//      charaters.
+//----------------------------------------------------------------------
+
+int SynchConsoleOutput::PutString(char *buffer, int size) {
+    for (int i = 0; i < size; ++i) PutChar(buffer[i]);
+    return size;
 }
 
 //----------------------------------------------------------------------
