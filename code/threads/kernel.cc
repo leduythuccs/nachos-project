@@ -18,6 +18,7 @@
 #include "synchdisk.h"
 #include "post.h"
 
+#define MAX_PROCESS 10
 //----------------------------------------------------------------------
 // Kernel::Kernel
 // 	Interpret command line arguments in order to determine flags
@@ -106,6 +107,11 @@ void Kernel::Initialize() {
     postOfficeIn = new PostOfficeInput(10);
     postOfficeOut = new PostOfficeOutput(reliability);
 
+    addrLock = new Semaphore("addrLock", 1);
+    gPhysPageBitMap = new Bitmap(256);
+    semTab = new STable();
+    pTab = new PTable(MAX_PROCESS);
+
     interrupt->Enable();
 }
 
@@ -126,6 +132,10 @@ Kernel::~Kernel() {
     delete fileSystem;
     delete postOfficeIn;
     delete postOfficeOut;
+    delete pTab;
+    delete gPhysPageBitMap;
+    delete semTab;
+    delete addrLock;
 
     Exit(0);
 }
