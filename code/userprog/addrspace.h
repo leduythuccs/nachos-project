@@ -20,12 +20,10 @@
 
 class AddrSpace {
    public:
-    AddrSpace();   // Create an address space.
-    ~AddrSpace();  // De-allocate an address space
-
-    bool Load(char *fileName);  // Load a program into addr space from
+    AddrSpace();                // Create an address space.
+    AddrSpace(char *fileName);  // Load a program into addr space from
                                 // a file
-                                // return false if not found
+    ~AddrSpace();               // De-allocate an address space
 
     void Execute();  // Run a program
                      // assumes the program has already
