@@ -19,8 +19,6 @@
 #include "filesys.h"
 #include "machine.h"
 
-
-
 class PostOfficeInput;
 class PostOfficeOutput;
 class SynchConsoleInput;
@@ -30,7 +28,6 @@ class Semaphore;
 #include "bitmap.h"
 #include "stable.h"
 #include "ptable.h"
-
 
 class Kernel {
    public:
@@ -68,7 +65,7 @@ class Kernel {
     Bitmap *gPhysPageBitMap;
     STable *semTab;
     PTable *pTab;
-    
+
     int hostName;  // machine identifier
 
    private:

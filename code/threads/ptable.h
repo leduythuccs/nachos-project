@@ -6,16 +6,17 @@
 
 #define MAX_PROCESS 10
 
-class PTable{
-private:
+class PTable {
+   private:
     Bitmap* bm;
     PCB* pcb[MAX_PROCESS];
     int psize;
     Semaphore* bmsem;
-public:
+
+   public:
     PTable(int size){};
     ~PTable(){};
-    int ExecUpdate(char *name);
+    int ExecUpdate(char* name);
     int ExitUpdate(int ec);
     int JoinUpdate(int id);
     int GetFreeSlot();

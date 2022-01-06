@@ -1,14 +1,15 @@
 // #include "synch.h"
 
-class PCB{
-private:
+class PCB {
+   private:
     Semaphore *joinsem;
     Semaphore *exitsem;
     Semaphore *multex;
 
     int exitcode;
     int numwait;
-public:
+
+   public:
     int parentID;
     PCB();
     PCB(int id);
@@ -30,5 +31,5 @@ public:
     int GetExitCode();
 
     void SetFileName(char *fn);
-    char* GetFileName();
+    char *GetFileName();
 };
