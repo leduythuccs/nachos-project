@@ -8,11 +8,14 @@ PTable::PTable(int size) {
         pcb[i] = NULL;
     }
     bmsem = new Semaphore("bmsem", 1);
+    pcb[0] = new PCB(0);
+	pcb[0]->SetFileName("./test/scheduler");
+	pcb[0]->parentID = -1;
 }
 
 PTable::~PTable() {
     int i;
-    for (i = 0; i < MAX_PROCESS; i++) {
+    for (i = 0; i < psize; i++) {
         if (!pcb[i]) delete pcb[i];
     }
     delete bmsem;
@@ -76,7 +79,7 @@ int PTable::ExitUpdate(int exitcode) {
     }
 
     if (!IsExist(id)) {
-        DEBUG(dbgSys, "\nPTable::Exit : Can't not exit process " << id);
+        DEBUG(dbgSys, "Process " << id << " is not exist.");
         return -1;
     }
 
@@ -123,11 +126,15 @@ int PTable::GetFreeSlot() {
     return -1;
 }
 
-bool PTable::IsExist(int pid) { return bm->Test(pid); }
+bool PTable::IsExist(int pid) {
+    return pcb[pid] != NULL;
+}
 
 void PTable::Remove(int pid) {
-    bm->Clear(pid);
-    if (pcb[pid] != 0) delete pcb[pid];
+    if (pcb[pid] != NULL) {
+        delete pcb[pid];
+        pcb[pid] = NULL;
+    }
 }
 
 char* PTable::GetFileName(int id) { return pcb[id]->GetFileName(); }
