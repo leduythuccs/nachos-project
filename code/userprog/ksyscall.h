@@ -188,17 +188,13 @@ int SysExec(char* name) {
     if (oFile == NULL) {
         ASSERT(false);
         DEBUG(dbgSys, "\nExec:: Can't open this file.");
-        kernel->machine->WriteRegister(2, -1);
         return -1;
     }
 
     delete oFile;
 
     // Return child process id
-    int id = kernel->pTab->ExecUpdate(name);
-    kernel->machine->WriteRegister(2, id);
-
-    return id;
+    return kernel->pTab->ExecUpdate(name);
 }
 
 int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }

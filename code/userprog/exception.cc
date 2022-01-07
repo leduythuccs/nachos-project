@@ -271,6 +271,12 @@ void handle_SC_Write() {
     return move_program_counter();
 }
 
+/**
+ * @brief handle System Call Exec
+ * @param virtAddr: virtual address of user string name (get from R4)
+ * @return -1 if failed to Exec, otherwise return id of new process
+ * (write result to R2)
+ */
 void handle_SC_Exec() {
     // Input: vi tri int
     // Output: Fail return -1, Success: return id cua thread dang chay
@@ -287,7 +293,7 @@ void handle_SC_Exec() {
         return move_program_counter();
     }
 
-    SysExec(name);
+    kernel->machine->WriteRegister(2, SysExec(name));
     // DO NOT DELETE NAME, THE THEARD WILL DELETE IT LATER
     // delete[] name;
 
@@ -309,7 +315,7 @@ void handle_SC_Join() {
 /**
  * @brief handle System Call Exit
  * @param id: thread id (get from R4)
- * @return -1 if failed to join, otherwise return exit code of
+ * @return -1 if failed to exit, otherwise return exit code of
  * the thread. (write result to R2)
  */
 void handle_SC_Exit() {
