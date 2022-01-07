@@ -66,11 +66,39 @@ int PTable::ExecUpdate(char* name) {
     return pid;
 }
 
-int PTable::ExitUpdate(int ec) { return 0; }
+int PTable::ExitUpdate(int exitcode) {
+    // Nếu tiến trình gọi là main process thì gọi Halt().
+    int id = kernel->currentThread->processID;
+    if (id == 0) {
+        kernel->currentThread->FreeSpace();
+        kernel->interrupt->Halt();
+        return 0;
+    }
+
+    if (!IsExist(id)) {
+        DEBUG(dbgSys, "\nPTable::Exit : Can't not exit process " << id);
+        return -1;
+    }
+
+    // Ngược lại gọi SetExitCode để đặt exitcode cho tiến trình gọi.
+    pcb[id]->SetExitCode(exitcode);
+    pcb[pcb[id]->parentID]->DecNumWait();
+
+    // Gọi JoinRelease để giải phóng tiến trình cha đang đợi nó (nếu có)
+    // và ExitWait() để xin tiến trình cha cho phép thoát.
+    pcb[id]->JoinRelease();
+    pcb[id]->ExitWait();
+
+    Remove(id);
+    return exitcode;
+}
 
 int PTable::JoinUpdate(int id) {
-    // Ta kiểm tra tính hợp lệ của processID id và kiểm tra tiến trình gọi Join có phải là cha của tiến trình có processID là id hay không. Nếu không thỏa, ta báo lỗi hợp lý và trả về -1.
-    if (id < 0 || id >= psize || pcb[id] == NULL || pcb[id]->parentID != kernel->currentThread->processID) {
+    // Ta kiểm tra tính hợp lệ của processID id và kiểm tra tiến trình gọi Join
+    // có phải là cha của tiến trình có processID là id hay không. Nếu không
+    // thỏa, ta báo lỗi hợp lý và trả về -1.
+    if (id < 0 || id >= psize || pcb[id] == NULL ||
+        pcb[id]->parentID != kernel->currentThread->processID) {
         DEBUG(dbgSys, "\nPTable::Join : Can't not join.\n");
         return -1;
     }
@@ -81,9 +109,9 @@ int PTable::JoinUpdate(int id) {
     // Sau khi tiến trình con thực hiện xong, tiến trình đã được giải phóng
 
     // Xử lý exitcode.
-	int exit_code = pcb[id]->GetExitCode();
+    int exit_code = pcb[id]->GetExitCode();
     // ExitRelease() để cho phép tiến trình con thoát.
-	pcb[id]->ExitRelease();
+    pcb[id]->ExitRelease();
     return exit_code;
 }
 

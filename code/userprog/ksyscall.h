@@ -201,7 +201,7 @@ int SysExec(char* name) {
     return id;
 }
 
-int SysJoin(int id) {
-    return kernel->pTab->JoinUpdate(id);
-}
+int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }
+
+int SysExit(int id) { return kernel->pTab->ExitUpdate(id); }
 #endif /* ! __USERPROG_KSYSCALL_H__ */

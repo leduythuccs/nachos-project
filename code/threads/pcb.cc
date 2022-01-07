@@ -77,13 +77,21 @@ int PCB::GetID() { return thread->processID; }
 int PCB::GetNumWait() { return numwait; }
 
 void PCB::JoinWait() {
-    // Gọi joinsem->P() để tiến trình chuyển sang trạng thái block và ngừng lại, chờ JoinRelease để thực hiện tiếp.
+    // Gọi joinsem->P() để tiến trình chuyển sang trạng thái block và ngừng lại,
+    // chờ JoinRelease để thực hiện tiếp.
     joinsem->P();
 }
 
-void PCB::ExitWait() {}
+void PCB::ExitWait() {
+    // Gọi exitsem-->V() để tiến trình chuyển sang trạng thái block và ngừng
+    // lại, chờ ExitReleaseđể thực hiện tiếp.
+    exitsem->P();
+}
 
-void PCB::JoinRelease() {}
+void PCB::JoinRelease() {
+    // Gọi joinsem->V() để giải phóng tiến trình gọi JoinWait().
+    joinsem->V();
+}
 
 void PCB::ExitRelease() {
     // Gọi exitsem->V() để giải phóng tiến trình đang chờ.
@@ -92,15 +100,14 @@ void PCB::ExitRelease() {
 
 void PCB::IncNumWait() {
     multex->P();
-	++numwait;
-	multex->V();
+    ++numwait;
+    multex->V();
 }
 
 void PCB::DecNumWait() {
     multex->P();
-	if (numwait > 0)
-		--numwait;
-	multex->V();
+    if (numwait > 0) --numwait;
+    multex->V();
 }
 
 void PCB::SetExitCode(int ec) {}
