@@ -3,6 +3,7 @@
 
 PTable::PTable(int size) {
     int i;
+    psize = size;
     for (i = 0; i < size; i++) {
         pcb[i] = NULL;
     }
@@ -71,7 +72,7 @@ int PTable::JoinUpdate(int id) { return 0; }
 
 int PTable::GetFreeSlot() {
     int i;
-    for (i = 0; i < MAX_PROCESS; i++) {
+    for (i = 0; i < psize; i++) {
         if (!pcb[i]) return i;
     }
     return -1;

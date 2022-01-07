@@ -15,6 +15,7 @@ class PCB {
 
    public:
     int parentID;
+    int processID;
     PCB();
     PCB(int id);
     ~PCB();

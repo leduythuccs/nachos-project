@@ -2,7 +2,7 @@
 #include "pcb.h"
 
 PCB::PCB(int id) {
-    this->parentID = kernel->currentThread->processID;
+    this->processID = kernel->currentThread->processID;
     joinsem = new Semaphore("joinsem", 1);
     exitsem = new Semaphore("exitsem", 1);
     multex = new Semaphore("multex", 1);
