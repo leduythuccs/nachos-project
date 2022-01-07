@@ -324,6 +324,35 @@ void handle_SC_Exit() {
     return move_program_counter();
 }
 
+void handle_SC_CreateSemaphore() {
+    // int CreateSemaphore(char* name, int semval).
+    int virtAddr = kernel->machine->ReadRegister(4);
+    int semval = kernel->machine->ReadRegister(5);
+
+    char* name = stringUser2System(virtAddr);
+    if (name == NULL) {
+        DEBUG('a', "\n Not enough memory in System");
+        printf("\n Not enough memory in System");
+        kernel->machine->WriteRegister(2, -1);
+        delete[] name;
+        return move_program_counter();
+    }
+
+    int res = SysCreateSemaphore(name, semval);
+
+    if (res == -1) {
+        DEBUG('a', "\n Khong the khoi tao semaphore");
+        printf("\n Khong the khoi tao semaphore");
+        kernel->machine->WriteRegister(2, -1);
+        delete[] name;
+        return move_program_counter();
+    }
+
+    delete[] name;
+    kernel->machine->WriteRegister(2, res);
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -381,6 +410,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Join();
                 case SC_Exit:
                     return handle_SC_Exit();
+                case SC_CreateSemaphore:
+                    return handle_SC_CreateSemaphore();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:

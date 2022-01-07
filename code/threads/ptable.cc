@@ -9,8 +9,8 @@ PTable::PTable(int size) {
     }
     bmsem = new Semaphore("bmsem", 1);
     pcb[0] = new PCB(0);
-	pcb[0]->SetFileName("./test/scheduler");
-	pcb[0]->parentID = -1;
+    pcb[0]->SetFileName("./test/scheduler");
+    pcb[0]->parentID = -1;
 }
 
 PTable::~PTable() {
@@ -126,9 +126,7 @@ int PTable::GetFreeSlot() {
     return -1;
 }
 
-bool PTable::IsExist(int pid) {
-    return pcb[pid] != NULL;
-}
+bool PTable::IsExist(int pid) { return pcb[pid] != NULL; }
 
 void PTable::Remove(int pid) {
     if (pcb[pid] != NULL) {
