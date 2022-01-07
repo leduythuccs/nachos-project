@@ -294,6 +294,18 @@ void handle_SC_Exec() {
     return move_program_counter();
 }
 
+/**
+ * @brief handle_SC_Join
+ * @param id: thread id (get from R4)
+ * @return -1 if failed to join, otherwise return exit code of
+ * the thread. (write result to R2)
+ */
+void handle_SC_Join() {
+    int id = kernel->machine->ReadRegister(4);
+    kernel->machine->WriteRegister(2, SysJoin(id));
+    // return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -347,6 +359,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Write();
                 case SC_Exec:
                     return handle_SC_Exec();
+                case SC_Join:
+                    return handle_SC_Join();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
@@ -355,7 +369,6 @@ void ExceptionHandler(ExceptionType which) {
                  * - Add new case for SC_name
                  */
                 case SC_Exit:
-                case SC_Join:
                 case SC_Create:
                 case SC_Remove:
                 case SC_Seek:

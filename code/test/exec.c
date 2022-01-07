@@ -5,9 +5,6 @@
 #include "syscall.h"
 
 int main() {
-    // Exec("test/help");
-    Exec("help");
-    // Exec("num_io");
-    Exec("random");
-    // Exec("halt");
+    int x = Exec("help");
+    Join(x);
 }

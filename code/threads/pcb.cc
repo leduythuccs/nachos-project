@@ -72,25 +72,40 @@ int PCB::Exec(char* filename, int id) {
     return id;
 }
 
-int PCB::GetID() { return 0; }
+int PCB::GetID() { return thread->processID; }
 
-int PCB::GetNumWait() { return 0; }
+int PCB::GetNumWait() { return numwait; }
 
-void PCB::JoinWait() {}
+void PCB::JoinWait() {
+    // Gọi joinsem->P() để tiến trình chuyển sang trạng thái block và ngừng lại, chờ JoinRelease để thực hiện tiếp.
+    joinsem->P();
+}
 
 void PCB::ExitWait() {}
 
 void PCB::JoinRelease() {}
 
-void PCB::ExitRelease() {}
+void PCB::ExitRelease() {
+    // Gọi exitsem->V() để giải phóng tiến trình đang chờ.
+    exitsem->V();
+}
 
-void PCB::IncNumWait() {}
+void PCB::IncNumWait() {
+    multex->P();
+	++numwait;
+	multex->V();
+}
 
-void PCB::DecNumWait() {}
+void PCB::DecNumWait() {
+    multex->P();
+	if (numwait > 0)
+		--numwait;
+	multex->V();
+}
 
 void PCB::SetExitCode(int ec) {}
 
-int PCB::GetExitCode() { return 0; }
+int PCB::GetExitCode() { return exitcode; }
 
 void PCB::SetFileName(char* fn) { strcpy(filename, fn); }
 

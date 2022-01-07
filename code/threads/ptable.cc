@@ -68,7 +68,24 @@ int PTable::ExecUpdate(char* name) {
 
 int PTable::ExitUpdate(int ec) { return 0; }
 
-int PTable::JoinUpdate(int id) { return 0; }
+int PTable::JoinUpdate(int id) {
+    // Ta kiểm tra tính hợp lệ của processID id và kiểm tra tiến trình gọi Join có phải là cha của tiến trình có processID là id hay không. Nếu không thỏa, ta báo lỗi hợp lý và trả về -1.
+    if (id < 0 || id >= psize || pcb[id] == NULL || pcb[id]->parentID != kernel->currentThread->processID) {
+        DEBUG(dbgSys, "\nPTable::Join : Can't not join.\n");
+        return -1;
+    }
+    // Tăng numwait và gọi JoinWait() để chờ tiến trình con thực hiện.
+    pcb[pcb[id]->parentID]->IncNumWait();
+    pcb[id]->JoinWait();
+
+    // Sau khi tiến trình con thực hiện xong, tiến trình đã được giải phóng
+
+    // Xử lý exitcode.
+	int exit_code = pcb[id]->GetExitCode();
+    // ExitRelease() để cho phép tiến trình con thoát.
+	pcb[id]->ExitRelease();
+    return exit_code;
+}
 
 int PTable::GetFreeSlot() {
     int i;
