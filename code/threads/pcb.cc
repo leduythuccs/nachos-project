@@ -3,8 +3,8 @@
 
 PCB::PCB(int id) {
     this->processID = kernel->currentThread->processID;
-    joinsem = new Semaphore("joinsem", 1);
-    exitsem = new Semaphore("exitsem", 1);
+    joinsem = new Semaphore("joinsem", 0);
+    exitsem = new Semaphore("exitsem", 0);
     multex = new Semaphore("multex", 1);
 }
 
@@ -65,7 +65,11 @@ int PCB::Exec(char* filename, int id) {
     this->parentID = kernel->currentThread->processID;
     // Gọi thực thi Fork(StartProcess_2,id) => Ta cast thread thành kiểu int,
     // sau đó khi xử ký hàm StartProcess ta cast Thread về đúng kiểu của nó.
-    this->thread->Fork(StartProcess_2, &id);
+
+    // Không được sử dụng biến id ở đây, vì biến id là biến cục bộ,
+    // nên khi hàm này kết thúc thì giá trị của biến này cũng bị xóa
+    // Đừng hỏi tôi đã mất bao lâu để nhận ra điều này :)
+    this->thread->Fork(StartProcess_2, &this->thread->processID);
 
     multex->V();
     // Trả về id.

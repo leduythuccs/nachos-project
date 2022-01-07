@@ -9,8 +9,7 @@ PTable::PTable(int size) {
     }
     bmsem = new Semaphore("bmsem", 1);
     pcb[0] = new PCB(0);
-	pcb[0]->SetFileName("./test/scheduler");
-	pcb[0]->parentID = -1;
+    pcb[0]->parentID = -1;
 }
 
 PTable::~PTable() {
@@ -35,8 +34,7 @@ int PTable::ExecUpdate(char* name) {
     }
     // So sánh tên chương trình và tên của currentThread để chắc chắn rằng
     // chương trình này không gọi thực thi chính nó.
-    if (strcmp(name, "./test/scheduler") == 0 ||
-        strcmp(name, kernel->currentThread->getName()) == 0) {
+    if (strcmp(name, kernel->currentThread->getName()) == 0) {
         DEBUG(dbgSys, "\nPTable::Exec : Can't not execute itself.\n");
         bmsem->V();
         return -1;
@@ -105,6 +103,7 @@ int PTable::JoinUpdate(int id) {
         DEBUG(dbgSys, "\nPTable::Join : Can't not join.\n");
         return -1;
     }
+
     // Tăng numwait và gọi JoinWait() để chờ tiến trình con thực hiện.
     pcb[pcb[id]->parentID]->IncNumWait();
     pcb[id]->JoinWait();
@@ -126,9 +125,7 @@ int PTable::GetFreeSlot() {
     return -1;
 }
 
-bool PTable::IsExist(int pid) {
-    return pcb[pid] != NULL;
-}
+bool PTable::IsExist(int pid) { return pcb[pid] != NULL; }
 
 void PTable::Remove(int pid) {
     if (pcb[pid] != NULL) {
