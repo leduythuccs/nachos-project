@@ -13,7 +13,7 @@ PCB::~PCB() {
     delete exitsem;
     delete multex;
 
-    if (thread){
+    if (thread) {
         thread->FreeSpace();
         thread->Finish();
         // delete thread;
@@ -22,55 +22,54 @@ PCB::~PCB() {
     delete[] filename;
 }
 
-void StartProcess_2(void* pid)
-{
+void StartProcess_2(void* pid) {
     int id;
     id = *((int*)pid);
-	// Lay fileName cua process id nay
+    // Lay fileName cua process id nay
     char* fileName = kernel->pTab->GetFileName(id);
 
-    AddrSpace *space;
+    AddrSpace* space;
     space = new AddrSpace(fileName);
 
-	if(space == NULL)
-	{
-		printf("\nPCB::Exec: Can't create AddSpace.");
-		return;
-	}
+    if (space == NULL) {
+        printf("\nPCB::Exec: Can't create AddSpace.");
+        return;
+    }
 
     space->Execute();
     // kernel->currentThread->space = space;
 
-    // space->InitRegisters();	// set the initial register values	
-    // space->RestoreState();	// load page table register	
+    // space->InitRegisters();	// set the initial register values
+    // space->RestoreState();	// load page table register
 
-    // kernel->machine->Run();	// jump to the user progam	
-    ASSERT(FALSE);	// machine->Run never returns;
-					// the address space exits
-					// by doing the syscall "exit"	
+    // kernel->machine->Run();	// jump to the user progam
+    ASSERT(FALSE);  // machine->Run never returns;
+                    // the address space exits
+                    // by doing the syscall "exit"
 }
 
-int PCB::Exec(char *filename, int id) { 
+int PCB::Exec(char* filename, int id) {
     // cerr << filename << ' ' << pid << endl;
     multex->P();
 
-    this->thread = new Thread(filename);
-    if(this->thread == NULL){
-		printf("\nPCB::Exec: Not enough memory!\n");
-        	multex->V(); // Nha CPU de nhuong CPU cho tien trinh khac
-		return -1; // Tra ve -1 neu that bai
-	}
+    this->thread = new Thread(filename, true);
+    if (this->thread == NULL) {
+        printf("\nPCB::Exec: Not enough memory!\n");
+        multex->V();  // Nha CPU de nhuong CPU cho tien trinh khac
+        return -1;    // Tra ve -1 neu that bai
+    }
 
-	//  Đặt processID của thread này là id.
-	this->thread->processID = id;
-	// Đặt parrentID của thread này là processID của thread gọi thực thi Exec
-	this->parentID = kernel->currentThread->processID;
-	// Gọi thực thi Fork(StartProcess_2,id) => Ta cast thread thành kiểu int, sau đó khi xử ký hàm StartProcess ta cast Thread về đúng kiểu của nó.
- 	this->thread->Fork(StartProcess_2, &id);
+    //  Đặt processID của thread này là id.
+    this->thread->processID = id;
+    // Đặt parrentID của thread này là processID của thread gọi thực thi Exec
+    this->parentID = kernel->currentThread->processID;
+    // Gọi thực thi Fork(StartProcess_2,id) => Ta cast thread thành kiểu int,
+    // sau đó khi xử ký hàm StartProcess ta cast Thread về đúng kiểu của nó.
+    this->thread->Fork(StartProcess_2, &id);
 
-    	multex->V();
-	// Trả về id.
-	return id;
+    multex->V();
+    // Trả về id.
+    return id;
 }
 
 int PCB::GetID() { return 0; }
@@ -93,11 +92,9 @@ void PCB::SetExitCode(int ec) {}
 
 int PCB::GetExitCode() { return 0; }
 
-void PCB::SetFileName(char *fn) {
-    strcpy(filename, fn);
-}
+void PCB::SetFileName(char* fn) { strcpy(filename, fn); }
 
-char* PCB::GetFileName() { 
+char* PCB::GetFileName() {
     // cerr << "get file name" << ' ' << filename << endl;
-    return filename;    
+    return filename;
 }

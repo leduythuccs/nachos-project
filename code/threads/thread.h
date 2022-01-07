@@ -77,13 +77,15 @@ class Thread {
     // THEY MUST be in this position for SWITCH to work.
     int *stackTop;                         // the current stack pointer
     void *machineState[MachineStateSize];  // all registers except for stackTop
+    bool has_dynamic_name;  // true if the thread name is dynamically allocated
 
    public:
-    Thread(char *debugName);  // initialize a Thread
-    ~Thread();                // deallocate a Thread
-                              // NOTE -- thread being deleted
-                              // must not be running when delete
-                              // is called
+    Thread(char *debugName,
+           bool _has_dynamic_name = false);  // initialize a Thread
+    ~Thread();                               // deallocate a Thread
+                                             // NOTE -- thread being deleted
+                                             // must not be running when delete
+                                             // is called
 
     int processID;
     int parrentID;

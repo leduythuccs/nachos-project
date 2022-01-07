@@ -10,8 +10,9 @@ class PCB {
     int exitcode;
     int numwait;
 
-    Thread* thread;
+    Thread *thread;
     char filename[128];
+
    public:
     int parentID;
     PCB();

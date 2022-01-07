@@ -288,7 +288,8 @@ void handle_SC_Exec() {
     }
 
     SysExec(name);
-    delete[] name;
+    // DO NOT DELETE NAME, THE THEARD WILL DELETE IT LATER
+    // delete[] name;
 
     return move_program_counter();
 }
