@@ -344,6 +344,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Read();
                 case SC_Write:
                     return handle_SC_Write();
+                case SC_Exec:
+                    return handle_SC_Exec();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
@@ -352,8 +354,6 @@ void ExceptionHandler(ExceptionType which) {
                  * - Add new case for SC_name
                  */
                 case SC_Exit:
-                case SC_Exec:
-                    return handle_SC_Exec();
                 case SC_Join:
                 case SC_Create:
                 case SC_Remove:
