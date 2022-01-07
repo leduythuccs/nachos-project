@@ -123,8 +123,11 @@ int PTable::GetFreeSlot() {
     return -1;
 }
 
-bool PTable::IsExist(int pid) { return false; }
+bool PTable::IsExist(int pid) { return bm->Test(pid); }
 
-void PTable::Remove(int pid) {}
+void PTable::Remove(int pid) {
+    bm->Clear(pid);
+    if (pcb[pid] != 0) delete pcb[pid];
+}
 
 char* PTable::GetFileName(int id) { return pcb[id]->GetFileName(); }

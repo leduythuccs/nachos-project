@@ -110,7 +110,7 @@ void PCB::DecNumWait() {
     multex->V();
 }
 
-void PCB::SetExitCode(int ec) {}
+void PCB::SetExitCode(int ec) { exitcode = ec; }
 
 int PCB::GetExitCode() { return exitcode; }
 
