@@ -181,4 +181,22 @@ int SysWrite(char* buffer, int charCount, int fileId) {
     }
     return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
+
+int SysExec(char* name) {
+    OpenFile* oFile = kernel->fileSystem->Open(name);
+    if (oFile == NULL) {
+        ASSERT(false);
+        DEBUG(dbgSys, "\nExec:: Can't open this file.");
+        kernel->machine->WriteRegister(2, -1);
+        return -1;
+    }
+
+    delete oFile;
+
+    // Return child process id
+    int id = kernel->pTab->ExecUpdate(name);
+    kernel->machine->WriteRegister(2, id);
+
+    return id;
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */

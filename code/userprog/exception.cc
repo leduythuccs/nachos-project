@@ -271,6 +271,28 @@ void handle_SC_Write() {
     return move_program_counter();
 }
 
+void handle_SC_Exec() {
+    // Input: vi tri int
+    // Output: Fail return -1, Success: return id cua thread dang chay
+    // SpaceId Exec(char *name);
+    int virtAddr;
+    virtAddr = kernel->machine->ReadRegister(
+        4);  // doc dia chi ten chuong trinh tu thanh ghi r4
+    char* name;
+    name = stringUser2System(virtAddr);  // Lay ten chuong trinh, nap vao kernel
+    if (name == NULL) {
+        DEBUG(dbgSys, "\n Not enough memory in System");
+        ASSERT(false);
+        kernel->machine->WriteRegister(2, -1);
+        return move_program_counter();
+    }
+
+    SysExec(name);
+    delete[] name;
+
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -331,6 +353,7 @@ void ExceptionHandler(ExceptionType which) {
                  */
                 case SC_Exit:
                 case SC_Exec:
+                    return handle_SC_Exec();
                 case SC_Join:
                 case SC_Create:
                 case SC_Remove:

@@ -1,8 +1,8 @@
 #ifndef PTABLE_H
 #define PTABLE_H
+
 #include "bitmap.h"
 #include "pcb.h"
-// #include "synch.h"
 
 #define MAX_PROCESS 10
 
@@ -14,8 +14,8 @@ class PTable {
     Semaphore* bmsem;
 
    public:
-    PTable(int size){};
-    ~PTable(){};
+    PTable(int size);
+    ~PTable();
     int ExecUpdate(char* name);
     int ExitUpdate(int ec);
     int JoinUpdate(int id);

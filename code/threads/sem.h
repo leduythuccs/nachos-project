@@ -1,9 +1,12 @@
-// #include "synch.h"
+#ifndef SEM_H
+#define SEM_H
+
+class Semaphore;
 
 class Sem {
    private:
-    char name[50];
     Semaphore* sem;
+    char name[50];
 
    public:
     Sem(char* na, int i);
@@ -15,3 +18,5 @@ class Sem {
 
     char* GetName();
 };
+
+#endif
