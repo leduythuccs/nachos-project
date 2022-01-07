@@ -199,4 +199,8 @@ int SysExec(char* name) {
 int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }
 
 int SysExit(int id) { return kernel->pTab->ExitUpdate(id); }
+
+int SysCreateSemaphore(char* name, int initialValue) {
+    return kernel->semTab->Create(name, initialValue);
+}
 #endif /* ! __USERPROG_KSYSCALL_H__ */
