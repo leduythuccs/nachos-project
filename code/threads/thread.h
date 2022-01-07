@@ -86,6 +86,7 @@ class Thread {
                               // is called
 
     int processID;
+    int parrentID;
     int exitStatus;
     void FreeSpace() {
         if (space != 0) delete space;

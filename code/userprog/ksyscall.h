@@ -183,6 +183,7 @@ int SysWrite(char* buffer, int charCount, int fileId) {
 }
 
 int SysExec(char* name) {
+    cerr << "call: " << name << endl;
     OpenFile* oFile = kernel->fileSystem->Open(name);
     if (oFile == NULL) {
         ASSERT(false);

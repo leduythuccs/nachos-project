@@ -4,4 +4,10 @@
 
 #include "syscall.h"
 
-int main() { Exec("test/help"); }
+int main() { 
+    // Exec("test/help"); 
+    Exec("help");
+    //Exec("num_io");
+    Exec("random");
+    // Exec("halt");
+}

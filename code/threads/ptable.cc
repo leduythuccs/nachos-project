@@ -1,9 +1,21 @@
 #include "synch.h"
 #include "ptable.h"
 
-PTable::PTable(int size) {}
+PTable::PTable(int size) {
+    int i;
+    for (i = 0; i < size; i++){
+        pcb[i] = NULL;
+    }
+    bmsem = new Semaphore("bmsem", 1);
+}
 
-PTable::~PTable() {}
+PTable::~PTable() {
+    int i;
+    for (i = 0; i < MAX_PROCESS; i++){
+        if (!pcb[i]) delete pcb[i];
+    }
+    delete bmsem;
+}
 
 int PTable::ExecUpdate(char* name) {
     // Gọi mutex->P(); để giúp tránh tình trạng nạp 2 tiến trình cùng 1 lúc.
@@ -57,10 +69,18 @@ int PTable::ExitUpdate(int ec) { return 0; }
 
 int PTable::JoinUpdate(int id) { return 0; }
 
-int PTable::GetFreeSlot() { return 0; }
+int PTable::GetFreeSlot() { 
+    int i;
+    for (i = 0; i < MAX_PROCESS; i++){
+        if (!pcb[i]) return i;
+    }
+    return -1;
+}
 
 bool PTable::IsExist(int pid) { return false; }
 
 void PTable::Remove(int pid) {}
 
-char* PTable::GetFileName(int id) { return NULL; }
+char* PTable::GetFileName(int id) { 
+    return pcb[id]->GetFileName();
+}
