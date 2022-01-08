@@ -38,16 +38,28 @@
 #include "openfile.h"
 #include "filetable.h"
 
+#define MAX_PROCESS 10
+
 #ifdef FILESYS_STUB  // Temporarily implement file system calls as
 // calls to UNIX, until the real file system
 // implementation is available
 class FileSystem {
    public:
-    FileTable *fileTable;
+    FileTable **fileTable;
 
-    FileSystem() { fileTable = new FileTable; }
+    FileSystem() {
+        fileTable = new FileTable *[MAX_PROCESS];
+        for (int i = 0; i < MAX_PROCESS; i++) {
+            fileTable[i] = new FileTable;
+        }
+    }
 
-    ~FileSystem() { delete fileTable; }
+    ~FileSystem() {
+        for (int i = 0; i < MAX_PROCESS; i++) {
+            delete fileTable[i];
+        }
+        delete[] fileTable;
+    }
 
     bool Create(char *name) {
         int fileDescriptor = OpenForWrite(name);
@@ -57,28 +69,33 @@ class FileSystem {
         return TRUE;
     }
 
-    OpenFile *Open(char *name) {
-        int fileDescriptor = OpenForReadWrite(name, FALSE);
+    OpenFile *Open(char *name);
 
-        if (fileDescriptor == -1) return NULL;
-        return new OpenFile(fileDescriptor);
+    int FileTableIndex();
+
+    void Renew(int id) {
+        for (int i = 0; i < FILE_MAX; i++) {
+            fileTable[id]->Remove(i);
+        }
     }
 
     int Open(char *name, int openMode) {
-        return fileTable->Insert(name, openMode);
+        return fileTable[FileTableIndex()]->Insert(name, openMode);
     }
 
-    int Close(int id) { return fileTable->Remove(id); }
+    int Close(int id) { return fileTable[FileTableIndex()]->Remove(id); }
 
     int Read(char *buffer, int charCount, int id) {
-        return fileTable->Read(buffer, charCount, id);
+        return fileTable[FileTableIndex()]->Read(buffer, charCount, id);
     }
 
     int Write(char *buffer, int charCount, int id) {
-        return fileTable->Write(buffer, charCount, id);
+        return fileTable[FileTableIndex()]->Write(buffer, charCount, id);
     }
 
-    int Seek(int position, int id) { return fileTable->Seek(position, id); }
+    int Seek(int position, int id) {
+        return fileTable[FileTableIndex()]->Seek(position, id);
+    }
 
     bool Remove(char *name) { return Unlink(name) == 0; }
 };
