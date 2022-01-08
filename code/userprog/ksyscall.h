@@ -236,4 +236,8 @@ int SysSignal(char* name) {
     return 0;
 }
 
+int SysGetPid() {
+    return kernel->currentThread->processID;
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */

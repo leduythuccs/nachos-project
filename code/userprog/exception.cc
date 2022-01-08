@@ -376,6 +376,11 @@ void handle_SC_Signal() {
     return move_program_counter();
 }
 
+void handle_SC_GetPid() {
+    kernel->machine->WriteRegister(2, SysGetPid());
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -439,6 +444,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Wait();
                 case SC_Signal:
                     return handle_SC_Signal();
+                case SC_GetPid:
+                    return handle_SC_GetPid();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
