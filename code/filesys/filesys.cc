@@ -342,4 +342,7 @@ OpenFile *FileSystem::Open(char *name) {
     if (fileDescriptor == -1) return NULL;
     return new OpenFile(fileDescriptor);
 }
+
+int FileSystem::FileTableIndex() { return kernel->currentThread->processID; };
+
 #endif  // FILESYS_STUB

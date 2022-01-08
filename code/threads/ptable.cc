@@ -54,6 +54,7 @@ int PTable::ExecUpdate(char* name) {
     // của slot này
     pcb[index] = new PCB(index);
     pcb[index]->SetFileName(name);
+    kernel->fileSystem->Renew(index);
 
     // parrentID là processID của currentThread
     pcb[index]->parentID = kernel->currentThread->processID;
