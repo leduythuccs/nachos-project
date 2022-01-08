@@ -60,6 +60,8 @@ class OpenFile {
         return Tell(file);
     }
 
+    int Seek(int position) { return currentOffset = position; }
+
    private:
     int file;
     int currentOffset;

@@ -182,6 +182,14 @@ int SysWrite(char* buffer, int charCount, int fileId) {
     return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
 
+int SysSeek(int seekPos, int fileId) {
+    if (fileId <= 1) {
+        DEBUG(dbgSys, "\nCan't seek in console");
+        return -1;
+    }
+    return kernel->fileSystem->Seek(seekPos, fileId);
+}
+
 int SysExec(char* name) {
     // cerr << "call: `" << name  << "`"<< endl;
     OpenFile* oFile = kernel->fileSystem->Open(name);
@@ -236,8 +244,6 @@ int SysSignal(char* name) {
     return 0;
 }
 
-int SysGetPid() {
-    return kernel->currentThread->processID;
-}
+int SysGetPid() { return kernel->currentThread->processID; }
 
 #endif /* ! __USERPROG_KSYSCALL_H__ */

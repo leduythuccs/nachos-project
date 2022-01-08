@@ -78,6 +78,8 @@ class FileSystem {
         return fileTable->Write(buffer, charCount, id);
     }
 
+    int Seek(int position, int id) { return fileTable->Seek(position, id); }
+
     bool Remove(char *name) { return Unlink(name) == 0; }
 };
 
