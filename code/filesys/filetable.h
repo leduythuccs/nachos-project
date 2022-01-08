@@ -75,6 +75,15 @@ class FileTable {
         return openFile[index]->Write(buffer, charCount);
     }
 
+    int Seek(int pos, int index) {
+        if (index <= 1 || index >= FILE_MAX) return -1;
+        if (openFile[index] == NULL) return -1;
+        // use seek(-1) to move to the end of file
+        if (pos == -1) pos = openFile[index]->Length();
+        if (pos < 0 || pos > openFile[index]->Length()) return -1;
+        return openFile[index]->Seek(pos);
+    }
+
     ~FileTable() {
         for (int i = 0; i < FILE_MAX; i++) {
             if (openFile[i]) delete openFile[i];

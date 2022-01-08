@@ -266,6 +266,14 @@ Signal:
 	j	$31
 	.end Signal
 
+	.globl GetPid
+	.ent	GetPid
+GetPid:
+	addiu $2,$0,SC_GetPid
+	syscall
+	j	$31
+	.end GetPid
+
 /* dummy function to keep gcc happy */
         .globl  __main
         .ent    __main

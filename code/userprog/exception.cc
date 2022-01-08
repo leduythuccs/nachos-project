@@ -272,15 +272,28 @@ void handle_SC_Write() {
 }
 
 /**
+ * Handle SC_Seek
+ * This method will seek the file to the given position.
+ * @param seekPos: seek position (use -1 to seek to end of file) (get from R4)
+ * @param fileId: file descriptor (get from R5)
+ * @return -1 if failed to seek, otherwise return the new position
+ */
+void handle_SC_Seek() {
+    int seekPos = kernel->machine->ReadRegister(4);
+    int fileId = kernel->machine->ReadRegister(5);
+
+    kernel->machine->WriteRegister(2, SysSeek(seekPos, fileId));
+
+    return move_program_counter();
+}
+
+/**
  * @brief handle System Call Exec
  * @param virtAddr: virtual address of user string name (get from R4)
  * @return -1 if failed to Exec, otherwise return id of new process
  * (write result to R2)
  */
 void handle_SC_Exec() {
-    // Input: vi tri int
-    // Output: Fail return -1, Success: return id cua thread dang chay
-    // SpaceId Exec(char *name);
     int virtAddr;
     virtAddr = kernel->machine->ReadRegister(
         4);  // doc dia chi ten chuong trinh tu thanh ghi r4
@@ -376,6 +389,11 @@ void handle_SC_Signal() {
     return move_program_counter();
 }
 
+void handle_SC_GetPid() {
+    kernel->machine->WriteRegister(2, SysGetPid());
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -427,6 +445,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Read();
                 case SC_Write:
                     return handle_SC_Write();
+                case SC_Seek:
+                    return handle_SC_Seek();
                 case SC_Exec:
                     return handle_SC_Exec();
                 case SC_Join:
@@ -439,6 +459,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_Wait();
                 case SC_Signal:
                     return handle_SC_Signal();
+                case SC_GetPid:
+                    return handle_SC_GetPid();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
@@ -448,7 +470,6 @@ void ExceptionHandler(ExceptionType which) {
                  */
                 case SC_Create:
                 case SC_Remove:
-                case SC_Seek:
                 case SC_ThreadFork:
                 case SC_ThreadYield:
                 case SC_ExecV:

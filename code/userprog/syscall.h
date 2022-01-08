@@ -47,6 +47,7 @@
 #define SC_CreateSemaphore 51
 #define SC_Wait 52
 #define SC_Signal 53
+#define SC_GetPid 54
 
 #ifndef IN_ASM
 
