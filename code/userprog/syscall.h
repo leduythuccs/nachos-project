@@ -44,6 +44,9 @@
 #define SC_ReadString 48
 #define SC_PrintString 49
 #define SC_CreateFile 50
+#define SC_CreateSemaphore 51
+#define SC_Wait 52
+#define SC_Signal 53
 
 #ifndef IN_ASM
 
@@ -168,6 +171,15 @@ int Seek(int position, OpenFileId id);
  * Return 1 on success, negative error code on failure
  */
 int Close(OpenFileId id);
+
+// Ham cho semaphore
+// Success: 0 - Failed: -1
+// Ham tao 1 semaphore voi ten semaphore
+int CreateSemaphore(char *name, int semval);
+
+int Wait(char *name);
+
+int Signal(char *name);
 
 /* User-level thread operations: Fork and Yield.  To allow multiple
  * threads to run within a user program.
