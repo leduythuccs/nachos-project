@@ -1,4 +1,5 @@
-// #include "synch.h"
+#ifndef PCB_H
+#define PCB_H
 
 class PCB {
    private:
@@ -9,8 +10,12 @@ class PCB {
     int exitcode;
     int numwait;
 
+    Thread *thread;
+    char filename[128];
+
    public:
     int parentID;
+    int processID;
     PCB();
     PCB(int id);
     ~PCB();
@@ -33,3 +38,5 @@ class PCB {
     void SetFileName(char *fn);
     char *GetFileName();
 };
+
+#endif

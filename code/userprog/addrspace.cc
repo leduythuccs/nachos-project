@@ -104,7 +104,7 @@ AddrSpace::~AddrSpace() {
 AddrSpace::AddrSpace(char *fileName) {
     OpenFile *executable = kernel->fileSystem->Open(fileName);
     NoffHeader noffH;
-    unsigned int i, size, j;
+    unsigned int i, size, j, offset;
     unsigned int numCodePage,
         numDataPage;  // số trang cho phần code và phần initData
     int lastCodePageSize, lastDataPageSize, firstDataPageSize,
@@ -148,7 +148,8 @@ AddrSpace::AddrSpace(char *fileName) {
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;  // for now, virtual page # = phys page #
-        pageTable[i].physicalPage = i;
+        pageTable[i].physicalPage = kernel->gPhysPageBitMap->FindAndSet();
+        // cerr << pageTable[i].physicalPage << endl;
         pageTable[i].valid = TRUE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
@@ -161,6 +162,7 @@ AddrSpace::AddrSpace(char *fileName) {
               PageSize);
         DEBUG(dbgAddr, "phyPage " << pageTable[i].physicalPage);
     }
+
     if (noffH.code.size > 0) {
         for (i = 0; i < numPages; i++)
             executable->ReadAt(

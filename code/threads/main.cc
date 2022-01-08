@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
 
     kernel = new Kernel(argc, argv);
 
-    kernel->Initialize();
+    kernel->Initialize(userProgName);
 
     CallOnUserAbort(Cleanup);  // if user hits ctl-C
 
