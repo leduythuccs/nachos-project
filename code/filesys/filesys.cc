@@ -327,4 +327,19 @@ void FileSystem::Print() {
     delete directory;
 }
 
+#else  // FILESYS_STUB
+#include "copyright.h"
+#include "sysdep.h"
+#include "openfile.h"
+#include "filetable.h"
+#include "filesys.h"
+#include "kernel.h"
+#include "main.h"
+
+OpenFile *FileSystem::Open(char *name) {
+    int fileDescriptor = OpenForReadWrite(name, FALSE);
+
+    if (fileDescriptor == -1) return NULL;
+    return new OpenFile(fileDescriptor);
+}
 #endif  // FILESYS_STUB

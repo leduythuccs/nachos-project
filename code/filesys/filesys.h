@@ -57,12 +57,7 @@ class FileSystem {
         return TRUE;
     }
 
-    OpenFile *Open(char *name) {
-        int fileDescriptor = OpenForReadWrite(name, FALSE);
-
-        if (fileDescriptor == -1) return NULL;
-        return new OpenFile(fileDescriptor);
-    }
+    OpenFile *Open(char *name);
 
     int Open(char *name, int openMode) {
         return fileTable->Insert(name, openMode);

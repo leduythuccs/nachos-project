@@ -1,3 +1,5 @@
+#ifndef FILETABLE_H
+#define FILETABLE_H
 #include "openfile.h"
 #include "sysdep.h"
 
@@ -91,3 +93,5 @@ class FileTable {
         delete[] openFile;
     }
 };
+
+#endif
