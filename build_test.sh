@@ -70,4 +70,8 @@ printf "help" | ../build.linux/nachos -x exec | grep -q '19120037'
 printf "help" | ../build.linux/nachos -x exec | grep -q '19120219'
 printf "help" | ../build.linux/nachos -x exec | grep -q '19120395'
 
+echo "5" > "input.txt"
+# run in 5 seconds and check if the output is correct
+timeout 5 ../build.linux/nachos -x main | grep -q 'Done'
+
 echo "Success!"

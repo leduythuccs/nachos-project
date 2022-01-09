@@ -3,7 +3,7 @@ set -e
 
 bash install_building_tools.sh
 
-bash build_nash_os.sh
+bash build_nachos.sh
 
 bash coff2noff.sh
 
