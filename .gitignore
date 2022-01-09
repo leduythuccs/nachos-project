@@ -5,6 +5,7 @@ code/build.linux/nachos
 coff2noff/coff2noff.x86Linux
 code/test/*
 !code/test/*.c
+!code/test/input.txt
 !code/test/script
 !code/test/Makefile
 code/DISK_0

@@ -15,8 +15,8 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install building tools
       run: bash install_building_tools.sh
-    - name: Build nash os
-      run: bash build_nash_os.sh
+    - name: Build nachos
+      run: bash build_nachos.sh
     - name: Build transfer COFF format to NOFF format
       run: bash coff2noff.sh
     - name: Build and run tests

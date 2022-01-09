@@ -14,7 +14,6 @@ class FileTable {
    private:
     OpenFile** openFile;
     int* fileOpenMode;
-    int* fileDescriptor;
 
    public:
     FileTable() {
@@ -22,12 +21,11 @@ class FileTable {
         fileOpenMode = new int[FILE_MAX];
         fileOpenMode[CONSOLE_IN] = MODE_READ;
         fileOpenMode[CONSOLE_OUT] = MODE_WRITE;
-
-        fileDescriptor = new int[FILE_MAX];
     }
 
     int Insert(char* fileName, int openMode) {
         int freeIndex = -1;
+        int fileDescriptor = -1;
         for (int i = 2; i < FILE_MAX; i++) {
             if (openFile[i] == NULL) {
                 freeIndex = i;
@@ -40,12 +38,12 @@ class FileTable {
         }
 
         if (openMode == MODE_READWRITE)
-            fileDescriptor[freeIndex] = OpenForReadWrite(fileName, FALSE);
+            fileDescriptor = OpenForReadWrite(fileName, FALSE);
         if (openMode == MODE_READ)
-            fileDescriptor[freeIndex] = OpenForRead(fileName, FALSE);
+            fileDescriptor = OpenForRead(fileName, FALSE);
 
-        if (fileDescriptor[freeIndex] == -1) return -1;
-        openFile[freeIndex] = new OpenFile(fileDescriptor[freeIndex]);
+        if (fileDescriptor == -1) return -1;
+        openFile[freeIndex] = new OpenFile(fileDescriptor);
         fileOpenMode[freeIndex] = openMode;
 
         return freeIndex;
@@ -54,7 +52,7 @@ class FileTable {
     int Remove(int index) {
         if (index < 2 || index >= FILE_MAX) return -1;
         if (openFile[index]) {
-            Close(fileDescriptor[index]);
+            delete openFile[index];
             openFile[index] = NULL;
             return 0;
         }
@@ -91,6 +89,7 @@ class FileTable {
             if (openFile[i]) delete openFile[i];
         }
         delete[] openFile;
+        delete[] fileOpenMode;
     }
 };
 
