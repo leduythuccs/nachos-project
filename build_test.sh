@@ -70,6 +70,8 @@ printf "help" | ../build.linux/nachos -x exec | grep -q '19120037'
 printf "help" | ../build.linux/nachos -x exec | grep -q '19120219'
 printf "help" | ../build.linux/nachos -x exec | grep -q '19120395'
 
+../build.linux/nachos -x test_sem | grep -q 'testSemaphore passed'
+
 echo "5" > "input.txt"
 # run in 5 seconds and check if the output is correct
 timeout 5 ../build.linux/nachos -x main | grep -q 'Done'
