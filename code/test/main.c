@@ -4,13 +4,13 @@
 #define MAX_STUDENT 5
 
 int main() {
-    int file_input, file_output;      // file descriptor for input, output
-    int f_shared;               // file descriptor for shared variable
-    int n;                      // n students
-    char buffer[MAX_LENGTH];    // For reading stuff
-    int students[MAX_STUDENT];  // Array of students
-    int water_machine;          // Water machine
-    int tmp, i;                 // tempurary variable, index variable
+    int file_input, file_output;  // file descriptor for input, output
+    int f_shared;                 // file descriptor for shared variable
+    int n;                        // n students
+    char buffer[MAX_LENGTH];      // For reading stuff
+    int students[MAX_STUDENT];    // Array of students
+    int water_machine;            // Water machine
+    int tmp, i;                   // tempurary variable, index variable
 
     /***********Read the number of students***********/
     file_input = Open("input.txt", 0);

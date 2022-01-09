@@ -5,8 +5,9 @@
 void main() {
     int studentId;  // student id
     int fillTime;   // number of time that the machine need to fill the cup
-    int file_descriptor, file_input; // file descriptor for shared file, file descriptor for input file
-    char buffer[4] = " , "; // for write and reading stuff
+    int file_descriptor, file_input;  // file descriptor for shared file, file
+                                      // descriptor for input file
+    char buffer[4] = " , ";           // for write and reading stuff
     int j = 0;
     int tmp;
 
