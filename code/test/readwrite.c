@@ -51,6 +51,7 @@ int main() {
     PrintString("\n");
     Close(fileid);
 
+    PrintString("Type a string (use ctrl+D to end typing):\n");
     for (i = 0; i < len; ++i) {
         buffer[i] = 0;
     }
