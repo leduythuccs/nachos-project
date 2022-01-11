@@ -1,17 +1,15 @@
-# Nachos-project1
+# Nachos-project
+This is a project for the OS course in HCMUS.
 
 ## Installation
-
-As a teammate, I've already created the script to install, build the nachos for you :).
-You can still read the full building instruction [here](https://www.fit.hcmus.edu.vn/~ntquan/os/setup_nachos.html) if you want to (believe me, you don't want to read it).
 
 To install: run `bash full_install.sh`. In case of error, you might want to run the installation step by step via:
 ```bash
 # Install building tools like make, g++
 bash install_building_tools.sh
 
-# Build the nash os + run it
-bash build_nash_os.sh
+# Build the nachos
+bash build_nachos.sh
 
 # Build the coff2noff translator
 bash coff2noff.sh
@@ -20,8 +18,11 @@ bash coff2noff.sh
 bash build_test.sh
 ```
 
-## Github workflow
+You can read the full building instruction [here](https://www.fit.hcmus.edu.vn/~ntquan/os/setup_nachos.html) if you want to (believe me, you don't want to read it :) ).
 
-I've setted up the github workflow, it will automatically run the building script to make sure everything is okay.
 
-Please make sure that you passed all the workflows before create a pull request.
+## CI/CD
+
+I've set up the GitHub workflow, it will automatically build & test the nachos when you make a commit.
+
+Please make sure that you passed all the workflows before creating a pull request.
