@@ -1,5 +1,9 @@
 # Nachos-project
-This is a project for the OS course in HCMUS.
+Not Another Completely Heuristic Operating System
+
+This is our course-work for the OS course in HCMUS.
+
+Nashos version: 4.0
 
 ## Installation
 
