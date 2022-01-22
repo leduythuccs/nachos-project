@@ -108,7 +108,7 @@ void Kernel::Initialize(char *userProgName /*=NULL*/) {
     postOfficeOut = new PostOfficeOutput(reliability);
 
     addrLock = new Semaphore("addrLock", 1);
-    gPhysPageBitMap = new Bitmap(256);
+    gPhysPageBitMap = new Bitmap(128);
     semTab = new STable();
     pTab = new PTable(MAX_PROCESS);
 
