@@ -66,9 +66,7 @@ echo "random text to read from console" | ../build.linux/nachos -x readwrite | g
 diff -q abc.txt abc1.txt
 diff -q abc2.txt abc3.txt
 
-printf "help" | ../build.linux/nachos -x exec | grep -q '19120037'
-printf "help" | ../build.linux/nachos -x exec | grep -q '19120219'
-printf "help" | ../build.linux/nachos -x exec | grep -q '19120395'
+printf "123" | ../build.linux/nachos -x exec | grep -q '123'
 
 ../build.linux/nachos -x test_sem | grep -q 'testSemaphore passed'
 

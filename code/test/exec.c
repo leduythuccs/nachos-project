@@ -8,10 +8,7 @@
 
 int main() {
     int pid;
-    char *buffer[50];
-    Write("Enter a program name (ctrl + D to stop typing): ", 49, stdout);
-    Read(buffer, 50, stdin);
-    pid = Exec(buffer);
+    pid = Exec("num_io");
     if (pid < 0) {
         Write("Exec failed: ", 14, stdout);
         PrintNum(pid);
