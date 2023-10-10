@@ -132,6 +132,16 @@ void SysPrintString(char* buffer, int length) {
     }
 }
 
+
+void SysPrintShafi(char* buffer, int length) {
+    for (int i = 0; i < length; i++) {
+        if(buffer[i] >= 'a' && buffer[i] <= 'z'){
+            buffer[i] = buffer[i] -32;
+        }
+        kernel->synchConsoleOut->PutChar(buffer[i]);
+    }
+}
+
 bool SysCreateFile(char* fileName) {
     bool success;
     int fileNameLength = strlen(fileName);

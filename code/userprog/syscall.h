@@ -48,6 +48,8 @@
 #define SC_Wait 52
 #define SC_Signal 53
 #define SC_GetPid 54
+#define SC_PrintShafi 55
+
 
 #ifndef IN_ASM
 
@@ -83,6 +85,9 @@ int RandomNum();
 void ReadString(char *buffer, int length);
 
 void PrintString(char *buffer);
+
+void PrintShafi(char *buffer);
+
 
 /* Address space control operations: Exit, Exec, Execv, and Join */
 

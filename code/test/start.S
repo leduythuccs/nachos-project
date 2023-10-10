@@ -234,8 +234,18 @@ PrintString:
 	j	$31
 	.end PrintString
 
+	.globl PrintShafi
+	.ent	PrintShafi
+
+PrintShafi:
+	addiu $2,$0,SC_PrintShafi
+	syscall
+	j	$31
+	.end PrintShafi
+
 	.globl CreateFile
 	.ent	CreateFile
+
 CreateFile:
 	addiu $2,$0,SC_CreateFile
 	syscall
